@@ -87,4 +87,21 @@ public final class Turmite {
                 break;
         }
     }
+
+    public void turnBack() {
+        switch (dir) {
+            case UP:
+                dir = Direction.DOWN;
+                break;
+            case DOWN:
+                dir = Direction.UP;
+                break;
+            case LEFT:
+                dir = Direction.RIGHT;
+                break;
+            case RIGHT:
+                dir = Direction.LEFT;
+                break;
+        }
+    }
 }
