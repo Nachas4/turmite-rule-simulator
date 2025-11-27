@@ -11,18 +11,18 @@ public class Grid {
         this.size = size;
     }
 
+    public Grid(Grid pos) {
+        this.x = pos.x;
+        this.y = pos.y;
+        this.size = pos.size;
+    }
+
     public int getX() {
         return x;
     }
 
     public int getY() {
         return y;
-    }
-
-    public Grid(Grid pos) {
-        this.x = pos.x;
-        this.y = pos.y;
-        this.size = pos.size;
     }
 
     public void moveUp() {

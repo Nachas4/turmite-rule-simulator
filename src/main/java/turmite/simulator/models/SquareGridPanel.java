@@ -13,7 +13,7 @@ public class SquareGridPanel extends JPanel {
     private final Map<Grid, Color> grids = new HashMap<>();
     private final transient Turmite turmite;
 
-    private double zoom = 3;
+    private double zoom = 2;
     private double lastMouseX = 0;
     private double lastMouseY = 0;
     private double offsetX = 0;
@@ -101,16 +101,16 @@ public class SquareGridPanel extends JPanel {
         g2.dispose();
     }
 
+    /*
+     * Main Methods
+     */
+
     public void stepSimulation() {
         turmite.move();
         double rand = Math.random();
         if (rand < 0.3) turmite.turnLeft();
         if (Math.random() > 0.7) turmite.turnRight();
         setColorAt(new Grid(turmite.getPos()), Color.black);
-    }
-
-    public Color getColorAt(Grid grid) {
-        return grids.get(grid);
     }
 
     public void setColorAt(Grid grid, Color color) {

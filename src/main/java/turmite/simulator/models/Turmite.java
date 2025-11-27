@@ -5,8 +5,8 @@ public final class Turmite {
     private Direction dir;
 
     public Turmite(Grid pos) {
-        dir = Direction.UP;
         this.pos = pos;
+        dir = Direction.UP;
     }
 
     public int getX() {

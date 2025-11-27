@@ -29,8 +29,4 @@ public class Simulator extends Thread {
     public void setInterval(int interval) {
         this.interval = interval;
     }
-
-    public SquareGridPanel getGridPanel() {
-        return gridPanel;
-    }
 }
