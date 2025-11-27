@@ -1,12 +1,14 @@
 package turmite.simulator.models;
 
-public class GridPos {
+public class Grid {
     private int x;
     private int y;
+    private final int size;
 
-    public GridPos(int x, int y) {
+    public Grid(int x, int y, int size) {
         this.x = x;
         this.y = y;
+        this.size = size;
     }
 
     public int getX() {
@@ -17,19 +19,25 @@ public class GridPos {
         return y;
     }
 
+    public Grid(Grid pos) {
+        this.x = pos.x;
+        this.y = pos.y;
+        this.size = pos.size;
+    }
+
     public void moveUp() {
-        y--;
+        y -= size;
     }
 
     public void moveDown() {
-        y++;
+        y += size;
     }
 
     public void moveLeft() {
-        x--;
+        x -= size;
     }
 
     public void moveRight() {
-        x++;
+        x += size;
     }
 }

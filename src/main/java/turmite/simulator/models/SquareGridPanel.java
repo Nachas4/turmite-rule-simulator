@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SquareGridPanel extends JPanel {
-    private final Map<GridPos, Color> grids = new HashMap<>();
-    private final transient Turmite turmite = new Turmite();
+    private final Map<Grid, Color> grids = new HashMap<>();
+    private final transient Turmite turmite;
 
     private double zoom = 3;
     private double lastMouseX = 0;
@@ -26,6 +26,7 @@ public class SquareGridPanel extends JPanel {
 
     public SquareGridPanel() {
         super();
+        turmite = new Turmite(new Grid(0, 0, gridSize));
         setupEventListeners();
     }
 
@@ -88,10 +89,10 @@ public class SquareGridPanel extends JPanel {
         g2.translate(offsetX, offsetY);
         g2.scale(zoom, zoom);
 
-        for (Map.Entry<GridPos, Color> entry : grids.entrySet()) {
+        for (Map.Entry<Grid, Color> entry : grids.entrySet()) {
             g2.setColor(entry.getValue());
-            GridPos gridPos = entry.getKey();
-            g2.fillRect(gridPos.getX(), gridPos.getY(), gridSize, gridSize);
+            Grid grid = entry.getKey();
+            g2.fillRect(grid.getX(), grid.getY(), gridSize, gridSize);
         }
 
         g2.setColor(Color.red);
@@ -100,12 +101,20 @@ public class SquareGridPanel extends JPanel {
         g2.dispose();
     }
 
-    public Color getColorAt(GridPos gridPos) {
-        return grids.get(gridPos);
+    public void stepSimulation() {
+        turmite.move();
+        double rand = Math.random();
+        if (rand < 0.3) turmite.turnLeft();
+        if (Math.random() > 0.7) turmite.turnRight();
+        setColorAt(new Grid(turmite.getPos()), Color.black);
     }
 
-    public void setColorAt(GridPos gridPos, Color color) {
-        grids.put(gridPos, color);
+    public Color getColorAt(Grid grid) {
+        return grids.get(grid);
+    }
+
+    public void setColorAt(Grid grid, Color color) {
+        grids.put(grid, color);
     }
 
     public void centerMap() {

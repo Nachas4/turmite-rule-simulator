@@ -1,6 +1,7 @@
 package turmite.simulator;
 
 import turmite.simulator.models.SquareGridPanel;
+import turmite.simulator.utils.Simulator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,5 +59,8 @@ public class TurmiteJFrame extends JFrame {
         TurmiteJFrame frame = new TurmiteJFrame();
         frame.setVisible(true);
         gridPanel.centerMap();
+
+        Simulator simulator = new Simulator(gridPanel);
+        simulator.start();
     }
 }
