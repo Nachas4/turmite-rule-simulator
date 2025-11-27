@@ -11,10 +11,10 @@ public class Grid {
         this.size = size;
     }
 
-    public Grid(Grid pos) {
-        this.x = pos.x;
-        this.y = pos.y;
-        this.size = pos.size;
+    public Grid(Grid grid) {
+        this.x = grid.x;
+        this.y = grid.y;
+        this.size = grid.size;
     }
 
     public int getX() {
@@ -39,5 +39,20 @@ public class Grid {
 
     public void moveRight() {
         x += size;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Grid grid) {
+            return this.x == grid.x && this.y == grid.y && this.size == grid.size;
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        long bits = java.lang.Double.doubleToLongBits(x);
+        bits ^= java.lang.Double.doubleToLongBits(y) * 31;
+        return (((int) bits) ^ ((int) (bits >> 32)));
     }
 }

@@ -1,6 +1,6 @@
 package turmite.simulator;
 
-import turmite.simulator.models.SquareGridPanel;
+import turmite.simulator.utils.SquareGridPanel;
 import turmite.simulator.utils.Simulator;
 
 import javax.swing.*;
@@ -25,7 +25,7 @@ public class TurmiteJFrame extends JFrame {
 
         GridBagConstraints constraints = new GridBagConstraints();
 
-        leftPanel.setBorder(BorderFactory.createLineBorder(Color.green));
+        leftPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.7;
         constraints.weighty = 1;
@@ -33,7 +33,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.gridy = 0;
         mainPanel.add(leftPanel, constraints);
 
-        rightPanel.setBorder(BorderFactory.createLineBorder(Color.blue));
+        rightPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 0.3;
         constraints.weighty = 1;
@@ -41,7 +41,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.gridy = 0;
         mainPanel.add(rightPanel, constraints);
 
-        gridPanel.setBorder(BorderFactory.createLineBorder(Color.orange));
+        gridPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1;
         constraints.weighty = 1;

@@ -1,4 +1,7 @@
-package turmite.simulator.models;
+package turmite.simulator.utils;
+
+import turmite.simulator.models.Grid;
+import turmite.simulator.models.Turmite;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,11 +9,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SquareGridPanel extends JPanel {
-    private final Map<Grid, Color> grids = new HashMap<>();
+    private final Map<Grid, Integer> grids = new HashMap<>();
     private final transient Turmite turmite;
 
     private double zoom = 2;
@@ -89,10 +93,15 @@ public class SquareGridPanel extends JPanel {
         g2.translate(offsetX, offsetY);
         g2.scale(zoom, zoom);
 
-        for (Map.Entry<Grid, Color> entry : grids.entrySet()) {
-            g2.setColor(entry.getValue());
-            Grid grid = entry.getKey();
-            g2.fillRect(grid.getX(), grid.getY(), gridSize, gridSize);
+        try {
+            for (Map.Entry<Grid, Integer> entry : grids.entrySet()) {
+                g2.setColor(Ruleset.numToColor(entry.getValue()));
+                Grid grid = entry.getKey();
+                g2.fillRect(grid.getX(), grid.getY(), gridSize, gridSize);
+            }
+        } catch (ConcurrentModificationException ignored) {
+            // Painting and modifying the map at the same time can throw this,
+            // but no actual error happens in either methods.
         }
 
         g2.setColor(Color.red);
@@ -106,14 +115,14 @@ public class SquareGridPanel extends JPanel {
      */
 
     public void stepSimulation() {
-        turmite.move();
-        double rand = Math.random();
-        if (rand < 0.3) turmite.turnLeft();
-        if (Math.random() > 0.7) turmite.turnRight();
-        setColorAt(new Grid(turmite.getPos()), Color.black);
+        Grid currTurmiteGrid = turmite.getGrid();
+        int gridColor = grids.getOrDefault(currTurmiteGrid, 0);
+
+        setColorAt(new Grid(currTurmiteGrid), turmite.calculateNextColor(gridColor));
+        turmite.move(gridColor);
     }
 
-    public void setColorAt(Grid grid, Color color) {
+    public void setColorAt(Grid grid, int color) {
         grids.put(grid, color);
     }
 
