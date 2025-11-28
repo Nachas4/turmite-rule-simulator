@@ -1,5 +1,4 @@
 {
-  "name": "BridgerAnt",
   "ruleset": [
     {"currState": 0, "currColor": 0, "turnDir": "R", "newColor": 1, "newState": 0},
     {"currState": 0, "currColor": 1, "turnDir": "L", "newColor": 2, "newState": 1},
