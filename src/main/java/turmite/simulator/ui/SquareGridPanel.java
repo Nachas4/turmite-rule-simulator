@@ -1,7 +1,9 @@
-package turmite.simulator.utils;
+package turmite.simulator.ui;
 
 import turmite.simulator.models.Grid;
+import turmite.simulator.models.Rule;
 import turmite.simulator.models.Turmite;
+import turmite.simulator.utils.Ruleset;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +11,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
+import java.io.FileNotFoundException;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SquareGridPanel extends JPanel {
@@ -48,18 +52,22 @@ public class SquareGridPanel extends JPanel {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                int gridPanelMouseX = e.getX();
-                int gridPanelMouseY = e.getY();
-
-                offsetX += gridPanelMouseX - lastMouseX;
-                offsetY += gridPanelMouseY - lastMouseY;
-
-                lastMouseX = gridPanelMouseX;
-                lastMouseY = gridPanelMouseY;
-
-                repaint();
+                calculatePan(e);
             }
         });
+    }
+
+    private void calculatePan(MouseEvent e) {
+        int gridPanelMouseX = e.getX();
+        int gridPanelMouseY = e.getY();
+
+        offsetX += gridPanelMouseX - lastMouseX;
+        offsetY += gridPanelMouseY - lastMouseY;
+
+        lastMouseX = gridPanelMouseX;
+        lastMouseY = gridPanelMouseY;
+
+        repaint();
     }
 
     private void calculateZoom(MouseWheelEvent e) {
@@ -122,12 +130,20 @@ public class SquareGridPanel extends JPanel {
         turmite.move(gridColor);
     }
 
-    public void setColorAt(Grid grid, int color) {
+    private void setColorAt(Grid grid, int color) {
         grids.put(grid, color);
     }
 
     public void centerMap() {
         offsetX = ((double) getWidth() / 2) - (gridSize * 1.5);
         offsetY = ((double) getHeight() / 2) - (gridSize * 1.5);
+    }
+
+    public void loadSelectedRuleset(String src) throws FileNotFoundException {
+        turmite.ruleset.readRulesetFromFile(src);
+    }
+
+    public List<Rule> getLoadedRuleset() {
+        return turmite.ruleset.getRules();
     }
 }

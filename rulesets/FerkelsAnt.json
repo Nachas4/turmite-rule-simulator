@@ -1,0 +1,8 @@
+{
+  "ruleset": [
+    {"currState": 0, "currColor": 0, "turnDir": "R", "newColor": 1, "newState": 0},
+    {"currState": 0, "currColor": 1, "turnDir": "R", "newColor": 1, "newState": 1},
+    {"currState": 1, "currColor": 0, "turnDir": "N", "newColor": 0, "newState": 0},
+    {"currState": 1, "currColor": 1, "turnDir": "N", "newColor": 0, "newState": 1}
+  ]
+}

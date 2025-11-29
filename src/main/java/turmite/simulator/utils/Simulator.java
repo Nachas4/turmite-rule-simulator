@@ -1,5 +1,7 @@
 package turmite.simulator.utils;
 
+import turmite.simulator.ui.SquareGridPanel;
+
 public class Simulator extends Thread {
     private final SquareGridPanel gridPanel;
 
