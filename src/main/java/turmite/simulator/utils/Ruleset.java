@@ -3,22 +3,51 @@ package turmite.simulator.utils;
 import turmite.simulator.models.Direction;
 import turmite.simulator.models.Rule;
 
+import javax.json.*;
 import java.awt.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Ruleset {
-    private static final int MAX_SIZE = 9;
-    private static final int MAX_STATES = 3;
-    private static final int MAX_COLORS = 3;
+    public static final int MAX_STATES = 3;
+    public static final int MAX_COLORS = 3;
+    public static final int MAX_RULES = MAX_STATES * MAX_COLORS;
+
+    public static final int SQUARE_GRID_MAX_TURN_DIRS = 4;
 
     private int highestState;
     private int highestColor;
 
-    private final List<Rule> rules = new ArrayList<>(MAX_SIZE);
+    private final List<Rule> rules = new ArrayList<>(MAX_RULES);
+
+    public void readRulesetFromFile(String src) throws FileNotFoundException {
+        clearRules();
+
+        InputStream fileStream = new FileInputStream(src);
+        JsonReader reader = Json.createReader(fileStream);
+        JsonObject rulesetObj = reader.readObject();
+
+        JsonArray ruleset = rulesetObj.getJsonArray("ruleset");
+
+        for (JsonValue rule : ruleset) {
+            JsonObject ruleObj = (JsonObject) rule;
+            addRule(
+                    ruleObj.getInt("currState"),
+                    ruleObj.getInt("currColor"),
+                    ruleObj.getString("turnDir").charAt(0),
+                    ruleObj.getInt("newColor"),
+                    ruleObj.getInt("newState")
+            );
+        }
+
+        reader.close();
+    }
 
     public void addRule(int currState, int currColor, Character dirChar, int newColor, int newState) {
-        if (rules.size() < MAX_SIZE) {
+        if (rules.size() < MAX_RULES) {
             Rule rule = validateRule(currState, currColor, dirChar, newColor, newState);
             calculateNumOfStatesAndColors();
             rules.add(rule);
@@ -37,12 +66,10 @@ public class Ruleset {
     }
 
     private Rule validateRule(int currState, int currColor, Character dirChar, int newColor, int newState) throws IllegalArgumentException {
-        if (currState >= MAX_STATES || currState < 0
-            || newState >= MAX_STATES || newState < 0)
+        if (currState >= MAX_STATES || currState < 0 || newState >= MAX_STATES || newState < 0)
             throw new IllegalArgumentException(String.format("State cannot be negative or higher than %d.", MAX_STATES - 1));
 
-        if (currColor >= MAX_COLORS || currColor < 0
-            || newColor >= MAX_COLORS || newColor < 0)
+        if (currColor >= MAX_COLORS || currColor < 0 || newColor >= MAX_COLORS || newColor < 0)
             throw new IllegalArgumentException(String.format("Color cannot be negative or higher than %d.", MAX_COLORS - 1));
 
         Direction dir = switch (dirChar) {
@@ -71,5 +98,9 @@ public class Ruleset {
 
     public List<Rule> getRules() {
         return rules;
+    }
+
+    private void clearRules() {
+        rules.clear();
     }
 }

@@ -7,6 +7,14 @@ public class Rule {
     private final int newColor;
     private final int newState;
 
+    public enum RuleCells {
+        CURR_STATE,
+        CURR_COLOR,
+        TURN_DIR,
+        NEW_COLOR,
+        NEW_STATE
+    }
+
     public Rule(int currState, int currColor, Direction turnDir, int newColor, int newState) {
         this.currState = currState;
         this.currColor = currColor;
