@@ -82,7 +82,7 @@ public class RuleInputPanel extends JPanel {
             ruleset.add(new Rule(
                     (int)((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_STATE)).getSelectedItem(),
                     (int)((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_COLOR)).getSelectedItem(),
-                    Direction.getTurnDirFromChar((Character)((JComboBox<Character>)getRuleCellFor(row, Rule.RuleCells.TURN_DIR)).getSelectedItem()),
+                    (char)((JComboBox<Character>)getRuleCellFor(row, Rule.RuleCells.TURN_DIR)).getSelectedItem(),
                     (int)((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_COLOR)).getSelectedItem(),
                     (int)((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_STATE)).getSelectedItem()
             ));

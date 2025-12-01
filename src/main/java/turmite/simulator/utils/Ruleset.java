@@ -46,7 +46,7 @@ public class Ruleset {
         reader.close();
     }
 
-    public void addRule(int currState, int currColor, Character dirChar, int newColor, int newState) {
+    public void addRule(int currState, int currColor, char dirChar, int newColor, int newState) {
         if (rules.size() < MAX_RULES) {
             Rule rule = validateRule(currState, currColor, dirChar, newColor, newState);
             calculateNumOfStatesAndColors();
@@ -65,7 +65,7 @@ public class Ruleset {
         }
     }
 
-    private Rule validateRule(int currState, int currColor, Character dirChar, int newColor, int newState) throws IllegalArgumentException {
+    private Rule validateRule(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
         if (currState >= MAX_STATES || currState < 0 || newState >= MAX_STATES || newState < 0)
             throw new IllegalArgumentException(String.format("State cannot be negative or higher than %d.", MAX_STATES - 1));
 

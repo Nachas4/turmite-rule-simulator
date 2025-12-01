@@ -52,7 +52,7 @@ public class FileHandler {
             JsonObject ruleObject = Json.createObjectBuilder()
                     .add("currState", rule.getCurrState())
                     .add("currColor", rule.getCurrColor())
-                    .add("turnDir", Direction.getCharFromTurnDir(rule.getTurnDir()).toString())
+                    .add("turnDir", Direction.getCharFromTurnDir(rule.getTurnDir()))
                     .add("newColor", rule.getNewColor())
                     .add("newState", rule.getNewState())
                     .build();

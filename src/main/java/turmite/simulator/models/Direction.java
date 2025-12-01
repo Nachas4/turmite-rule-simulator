@@ -14,7 +14,7 @@ public enum Direction {
         return List.of('L', 'R', 'N', 'U');
     }
 
-    public static Direction getTurnDirFromChar(Character character) {
+    public static Direction getTurnDirFromChar(char character) {
         return switch (character) {
             case 'L' -> LEFT;
             case 'R' -> RIGHT;
@@ -24,7 +24,7 @@ public enum Direction {
         };
     }
 
-    public static Character getCharFromTurnDir(Direction dir) {
+    public static char getCharFromTurnDir(Direction dir) {
         return switch (dir) {
             case LEFT -> 'L';
             case RIGHT -> 'R';
