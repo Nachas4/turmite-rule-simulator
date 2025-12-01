@@ -19,7 +19,7 @@ public enum Direction {
             case 'L' -> LEFT;
             case 'R' -> RIGHT;
             case 'N' -> NO_TURN;
-            case 'E' -> U_TURN;
+            case 'U' -> U_TURN;
             default -> throw new IllegalArgumentException("Turn Direction Character not recognized: " + character);
         };
     }
