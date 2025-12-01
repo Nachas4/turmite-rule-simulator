@@ -146,4 +146,10 @@ public class SquareGridPanel extends JPanel {
     public List<Rule> getLoadedRuleset() {
         return turmite.ruleset.getRules();
     }
+
+    public void reset() {
+        grids.clear();
+        turmite.resetPos();
+        repaint();
+    }
 }

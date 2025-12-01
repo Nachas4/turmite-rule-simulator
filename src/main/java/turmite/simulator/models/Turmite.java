@@ -154,4 +154,8 @@ public final class Turmite {
     private void moveRight() {
         pos.moveRight();
     }
+
+    public void resetPos() {
+        pos.reset();
+    }
 }

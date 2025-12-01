@@ -10,8 +10,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class TurmiteJFrame extends JFrame {
+    private static final String START_STR = "Start";
+    private static final String PAUSE_STR = "Pause";
+    private static final String STEP_STR = "Step Once";
+    private static final String RESET_STR = "Reset Grid";
+    private static final String IMPORT_STR = "Import";
+    private static final String EXPORT_STR = "Export";
+
+    private static final String RULESET_DIR = "rulesets";
+    private static final String RULESET_EXT = ".json";
+
     private static final SquareGridPanel gridPanel = new SquareGridPanel();
     private static final JPanel leftPanel = new JPanel(new GridBagLayout());
     private static final JPanel rightPanel = new JPanel(new GridBagLayout());
@@ -19,11 +32,15 @@ public class TurmiteJFrame extends JFrame {
 
     private static final JComboBox<String> ruleSelector = new JComboBox<>();
     private static final RuleInputPanel ruleInputPanel = new RuleInputPanel();
-    private static final Button importButton = new Button("Import");
-    private static final Button exportButton = new Button("Export");
+    private static final Button importButton = new Button(IMPORT_STR);
+    private static final Button exportButton = new Button(EXPORT_STR);
 
-    private static final String RULESET_DIR = "rulesets";
-    private static final String RULESET_EXT = ".json";
+    private static final Button toggleSimButton = new Button(START_STR);
+    private static final Button stepSimButton = new Button(STEP_STR);
+    private static final Button resetSimButton = new Button(RESET_STR);
+    private static final JSlider intervalSlider = new JSlider(3, 1000, 300);
+
+    private static final Simulator simulator = new Simulator(gridPanel, intervalSlider.getValue());
 
     public TurmiteJFrame() {
         super("Turmite Simulator");
@@ -41,6 +58,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.fill = GridBagConstraints.BOTH;
 
         Insets insets = new Insets(0, 0, 0, 0);
+        constraints.insets = insets;
 
         leftPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
         constraints.weightx = 0.8;
@@ -61,11 +79,65 @@ public class TurmiteJFrame extends JFrame {
         constraints.weighty = 1;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        insets.set(20, 20, 100, 20);
-        constraints.insets = insets;
+        insets.set(20, 20, 20, 20);
         leftPanel.add(gridPanel, constraints);
 
-        fillRuleSelectorDropdown();
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        insets.set(0, 10, 50, 10);
+        leftPanel.add(buttonPanel, constraints);
+
+        insets.set(0, 20, 0, 20);
+
+        constraints.weightx = 0.4;
+        constraints.weighty = 0;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        buttonPanel.add(toggleSimButton, constraints);
+
+        constraints.weightx = 0.4;
+        constraints.weighty = 0;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+        buttonPanel.add(stepSimButton, constraints);
+
+        constraints.weightx = 0.2;
+        constraints.weighty = 0;
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        buttonPanel.add(resetSimButton, constraints);
+
+        intervalSlider.setPaintTrack(true);
+        intervalSlider.setPaintTicks(true);
+        intervalSlider.setPaintLabels(true);
+        intervalSlider.setSnapToTicks(true);
+        intervalSlider.setMajorTickSpacing(100);
+        Map<Integer, JComponent> customLabelTable = new HashMap<>();
+        customLabelTable.put(3, new JLabel("3"));
+        customLabelTable.put(100, new JLabel("100"));
+        customLabelTable.put(200, new JLabel("200"));
+        customLabelTable.put(300, new JLabel("300"));
+        customLabelTable.put(400, new JLabel("400"));
+        customLabelTable.put(500, new JLabel("500"));
+        customLabelTable.put(600, new JLabel("600"));
+        customLabelTable.put(700, new JLabel("700"));
+        customLabelTable.put(800, new JLabel("800"));
+        customLabelTable.put(900, new JLabel("900"));
+        customLabelTable.put(1000, new JLabel("1000"));
+        intervalSlider.setLabelTable(new Hashtable<>(customLabelTable));
+        constraints.weightx = 1;
+        constraints.weighty = 0;
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        constraints.gridwidth = 3;
+        insets.set(20, 20, 0, 20);
+        buttonPanel.add(intervalSlider, constraints);
+
+        constraints.gridwidth = 1;
+
         constraints.weightx = 1;
         constraints.weighty = 0;
         constraints.gridx = 0;
@@ -108,10 +180,18 @@ public class TurmiteJFrame extends JFrame {
         add(mainPanel);
     }
 
+    private static void fillRuleSelectorDropdown() {
+        FileHandler.readFileNamesIntoDropdown(ruleSelector, RULESET_DIR, RULESET_EXT);
+    }
+
     private void setupEventListeners() {
         ruleSelector.addActionListener(e -> loadSelectedRulesetFromRuleSelector());
         importButton.addActionListener(e -> importRulesetFromFileDialog());
         exportButton.addActionListener(e -> exportRulesetWithFileDialog());
+        toggleSimButton.addActionListener(e -> toggleSimulation());
+        stepSimButton.addActionListener(e -> stepSimulation());
+        resetSimButton.addActionListener(e -> resetSimulation());
+        intervalSlider.addChangeListener(e -> changeSimulationSpeed());
     }
 
     private void loadSelectedRulesetFromRuleSelector() {
@@ -157,22 +237,34 @@ public class TurmiteJFrame extends JFrame {
         }
     }
 
-    private static void fillRuleSelectorDropdown() {
-        FileHandler.readFileNamesIntoDropdown(ruleSelector, RULESET_DIR, RULESET_EXT);
+    private void toggleSimulation() {
+        if (simulator.toggleSimulation()) toggleSimButton.setLabel(PAUSE_STR);
+        else toggleSimButton.setLabel(START_STR);
+    }
+
+    private void stepSimulation() {
+        simulator.stepSimulation();
+    }
+
+    private void resetSimulation() {
+        simulator.resetSimulation();
+    }
+
+    private void changeSimulationSpeed() {
+        simulator.setInterval(intervalSlider.getValue());
     }
 
     public static void main(String[] args) {
         TurmiteJFrame frame = new TurmiteJFrame();
+        fillRuleSelectorDropdown();
         frame.setVisible(true);
         gridPanel.centerMap();
 
         try {
-            gridPanel.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
-            // TODO: Selecting a new Ruleset from ruleSelector breaks the Simulator right now
-            //Simulator simulator = new Simulator(gridPanel);
-            //simulator.start();
+            simulator.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
+            simulator.start();
         } catch (FileNotFoundException e) {
-            Dialogs.showErrorDialog(frame, String.format("File not found: %s.json", ruleSelector.getItemAt(0)));
+            Dialogs.showErrorDialog(frame, String.format("File not found: %s%s", ruleSelector.getItemAt(0), RULESET_DIR));
         }
     }
 }
