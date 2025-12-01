@@ -240,8 +240,6 @@ public class TurmiteJFrame extends JFrame {
     private void toggleSimulation() {
         if (simulator.toggleSimulation()) {
             toggleSimButton.setLabel(START_STR);
-            ruleSelector.setEnabled(true);
-            ruleInputPanel.setEnabled(true);
             importButton.setEnabled(true);
             exportButton.setEnabled(true);
             stepSimButton.setEnabled(true);
@@ -249,21 +247,26 @@ public class TurmiteJFrame extends JFrame {
         }
         else {
             toggleSimButton.setLabel(PAUSE_STR);
-            ruleSelector.setEnabled(false);
-            ruleInputPanel.setEnabled(false);
             importButton.setEnabled(false);
             exportButton.setEnabled(false);
             stepSimButton.setEnabled(false);
             resetSimButton.setEnabled(false);
         }
+
+        ruleSelector.setEnabled(false);
+        ruleInputPanel.setEnabled(false);
     }
 
     private void stepSimulation() {
         simulator.stepSimulation();
+        ruleSelector.setEnabled(false);
+        ruleInputPanel.setEnabled(false);
     }
 
     private void resetSimulation() {
         simulator.resetSimulation();
+        ruleSelector.setEnabled(true);
+        ruleInputPanel.setEnabled(true);
     }
 
     private void changeSimulationSpeed() {
