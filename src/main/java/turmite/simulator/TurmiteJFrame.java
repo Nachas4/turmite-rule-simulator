@@ -277,8 +277,10 @@ public class TurmiteJFrame extends JFrame {
         gridPanel.centerMap();
 
         try {
-            simulator.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
-            simulator.start();
+            if (ruleSelector.getItemCount() > 0) {
+                simulator.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
+                simulator.start();
+            }
         } catch (FileNotFoundException e) {
             Dialogs.showErrorDialog(frame, String.format("File not found: %s%s", ruleSelector.getItemAt(0), RULESET_DIR));
         }
