@@ -150,4 +150,14 @@ public class RuleInputPanel extends JPanel {
             ((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_STATE)).setSelectedIndex(0);
         }
     }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        for (int row = 0; row < Ruleset.MAX_RULES; row++) {
+            getRuleCellFor(row, Rule.RuleCells.TURN_DIR).setEnabled(enabled);
+            getRuleCellFor(row, Rule.RuleCells.NEW_COLOR).setEnabled(enabled);
+            getRuleCellFor(row, Rule.RuleCells.NEW_STATE).setEnabled(enabled);
+        }
+    }
 }
