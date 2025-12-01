@@ -239,7 +239,7 @@ public class TurmiteJFrame extends JFrame {
 
     private void toggleSimulation() {
         if (simulator.toggleSimulation()) {
-            toggleSimButton.setLabel(PAUSE_STR);
+            toggleSimButton.setLabel(START_STR);
             ruleSelector.setEnabled(true);
             ruleInputPanel.setEnabled(true);
             importButton.setEnabled(true);
@@ -248,7 +248,7 @@ public class TurmiteJFrame extends JFrame {
             resetSimButton.setEnabled(true);
         }
         else {
-            toggleSimButton.setLabel(START_STR);
+            toggleSimButton.setLabel(PAUSE_STR);
             ruleSelector.setEnabled(false);
             ruleInputPanel.setEnabled(false);
             importButton.setEnabled(false);
