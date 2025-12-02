@@ -3,7 +3,7 @@ package turmite.simulator.models;
 import turmite.simulator.utils.Ruleset;
 
 public final class Turmite {
-    public final Ruleset ruleset = new Ruleset();
+    private final Ruleset ruleset = new Ruleset();
 
     private final Grid pos;
     private Direction dir;
@@ -157,5 +157,9 @@ public final class Turmite {
 
     public void resetPos() {
         pos.reset();
+    }
+
+    public Ruleset getRuleset() {
+        return ruleset;
     }
 }

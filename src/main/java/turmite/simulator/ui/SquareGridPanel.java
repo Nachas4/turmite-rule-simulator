@@ -7,21 +7,20 @@ import turmite.simulator.utils.Ruleset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SquareGridPanel extends JPanel {
+    private static final double DEFAULT_ZOOM = 2;
+
     private final Map<Grid, Integer> grids = new HashMap<>();
     private final transient Turmite turmite;
+    private RuleInputPanel attachedRuleInputPanel = null;
 
-    private double zoom = 2;
+    private double zoom = DEFAULT_ZOOM;
     private double lastMouseX = 0;
     private double lastMouseY = 0;
     private double offsetX = 0;
@@ -140,16 +139,43 @@ public class SquareGridPanel extends JPanel {
     }
 
     public void loadSelectedRuleset(String src) throws FileNotFoundException {
-        turmite.ruleset.readRulesetFromFile(src);
+        turmite.getRuleset().readRulesetFromFile(src);
+        if (attachedRuleInputPanel != null) attachedRuleInputPanel.setPanelRuleset(turmite.getRuleset());
     }
 
-    public List<Rule> getLoadedRuleset() {
-        return turmite.ruleset.getRules();
+    // Using Rule.RuleCells insures that the returned JComboBox is of the desired type.
+    @SuppressWarnings("unchecked")
+    public void attachRuleInputPanel(RuleInputPanel rp) {
+        attachedRuleInputPanel = rp;
+        for (int row = 0; row < Ruleset.MAX_RULES; row++) {
+            int intRow = row;
+
+            JComboBox<Integer> cbI1 = ((JComboBox<Integer>)attachedRuleInputPanel.getRuleCellFor(row, Rule.RuleCells.CURR_STATE));
+            cbI1.addItemListener(e -> updateRuleset(intRow, Rule.RuleCells.CURR_STATE, cbI1));
+
+            JComboBox<Integer> cbI2 = ((JComboBox<Integer>)attachedRuleInputPanel.getRuleCellFor(row, Rule.RuleCells.CURR_COLOR));
+            cbI2.addItemListener(e -> updateRuleset(intRow, Rule.RuleCells.CURR_COLOR, cbI2));
+
+            JComboBox<Character> cbC = ((JComboBox<Character>)attachedRuleInputPanel.getRuleCellFor(row, Rule.RuleCells.TURN_DIR));
+            cbC.addItemListener(e -> updateRuleset(intRow, Rule.RuleCells.TURN_DIR, cbC));
+
+            JComboBox<Integer> cbI3 = ((JComboBox<Integer>)attachedRuleInputPanel.getRuleCellFor(row, Rule.RuleCells.NEW_COLOR));
+            cbI3.addItemListener(e -> updateRuleset(intRow, Rule.RuleCells.NEW_COLOR, cbI3));
+
+            JComboBox<Integer> cbI4 = ((JComboBox<Integer>)attachedRuleInputPanel.getRuleCellFor(row, Rule.RuleCells.NEW_STATE));
+            cbI4.addItemListener(e -> updateRuleset(intRow, Rule.RuleCells.NEW_STATE, cbI4));
+        }
+    }
+
+    private void updateRuleset(int intRow, Rule.RuleCells cell, JComboBox<?> cb) {
+        if (attachedRuleInputPanel.isNotSettingPanel()) turmite.getRuleset().changeRuleCell(intRow, cell, cb.getSelectedItem());
     }
 
     public void reset() {
         grids.clear();
         turmite.resetPos();
+        centerMap();
+        zoom = DEFAULT_ZOOM;
         repaint();
     }
 }

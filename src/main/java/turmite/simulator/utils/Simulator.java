@@ -2,7 +2,6 @@ package turmite.simulator.utils;
 
 import turmite.simulator.ui.SquareGridPanel;
 
-import java.io.FileNotFoundException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,9 +47,5 @@ public class Simulator extends Thread {
 
     public void resetSimulation() {
         gridPanel.reset();
-    }
-
-    public void loadSelectedRuleset(String src) throws FileNotFoundException {
-        gridPanel.loadSelectedRuleset(src);
     }
 }

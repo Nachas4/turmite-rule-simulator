@@ -44,14 +44,35 @@ public class Ruleset {
         }
 
         reader.close();
+
+        calculateNumOfStatesAndColors();
     }
 
     public void addRule(int currState, int currColor, char dirChar, int newColor, int newState) {
         if (rules.size() < MAX_RULES) {
-            Rule rule = validateRule(currState, currColor, dirChar, newColor, newState);
+            Rule rule = validateRuleCells(currState, currColor, dirChar, newColor, newState);
             calculateNumOfStatesAndColors();
             rules.add(rule);
         }
+    }
+
+    public void changeRuleCell(int ruleNum, Rule.RuleCells cell, Object newValue) throws IllegalArgumentException {
+        Rule rule = rules.get(ruleNum);
+        Rule newRule = switch (cell) {
+            case CURR_STATE ->
+                    validateRuleCells((int)newValue, rule.getCurrColor(), Direction.getCharFromTurnDir(rule.getTurnDir()), rule.getNewColor(), rule.getNewState());
+            case CURR_COLOR ->
+                    validateRuleCells(rule.getCurrState(), (int)newValue, Direction.getCharFromTurnDir(rule.getTurnDir()), rule.getNewColor(), rule.getNewState());
+            case TURN_DIR ->
+                    validateRuleCells(rule.getCurrState(), rule.getCurrColor(), (char)newValue, rule.getNewColor(), rule.getNewState());
+            case NEW_COLOR ->
+                    validateRuleCells(rule.getCurrState(), rule.getCurrColor(), Direction.getCharFromTurnDir(rule.getTurnDir()), (int)newValue, rule.getNewState());
+            case NEW_STATE ->
+                    validateRuleCells(rule.getCurrState(), rule.getCurrColor(), Direction.getCharFromTurnDir(rule.getTurnDir()), rule.getNewColor(), (int)newValue);
+        };
+
+        rules.set(rules.indexOf(rule), newRule);
+        calculateNumOfStatesAndColors();
     }
 
     private void calculateNumOfStatesAndColors() {
@@ -65,7 +86,7 @@ public class Ruleset {
         }
     }
 
-    private Rule validateRule(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
+    private Rule validateRuleCells(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
         if (currState >= MAX_STATES || currState < 0)
             throw new IllegalArgumentException(String.format("State cannot be negative or higher than %d (got %d).", MAX_STATES - 1, currState));
         if (newState >= MAX_STATES || newState < 0)

@@ -1,8 +1,6 @@
 package turmite.simulator;
 
-import turmite.simulator.ui.Dialogs;
-import turmite.simulator.ui.RuleInputPanel;
-import turmite.simulator.ui.SquareGridPanel;
+import turmite.simulator.ui.*;
 import turmite.simulator.utils.FileHandler;
 import turmite.simulator.utils.Simulator;
 
@@ -10,9 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 public class TurmiteJFrame extends JFrame {
     private static final String START_STR = "Start";
@@ -30,7 +25,7 @@ public class TurmiteJFrame extends JFrame {
     private static final JPanel rightPanel = new JPanel(new GridBagLayout());
     private static final JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    private static final JComboBox<String> ruleSelector = new JComboBox<>();
+    private static final RuleSelectorDropDown ruleSelector = new RuleSelectorDropDown(RULESET_DIR, RULESET_EXT);
     private static final RuleInputPanel ruleInputPanel = new RuleInputPanel();
     private static final Button importButton = new Button(IMPORT_STR);
     private static final Button exportButton = new Button(EXPORT_STR);
@@ -38,13 +33,14 @@ public class TurmiteJFrame extends JFrame {
     private static final Button toggleSimButton = new Button(START_STR);
     private static final Button stepSimButton = new Button(STEP_STR);
     private static final Button resetSimButton = new Button(RESET_STR);
-    private static final JSlider intervalSlider = new JSlider(3, 1000, 300);
+    private static final IntervalSlider intervalSlider = new IntervalSlider(3, 1000, 300);
 
     private static final Simulator simulator = new Simulator(gridPanel, intervalSlider.getValue());
 
     public TurmiteJFrame() {
         super("Turmite Simulator");
         setupGUI();
+        attachComponents();
         setupEventListeners();
     }
 
@@ -110,24 +106,6 @@ public class TurmiteJFrame extends JFrame {
         constraints.gridy = 0;
         buttonPanel.add(resetSimButton, constraints);
 
-        intervalSlider.setPaintTrack(true);
-        intervalSlider.setPaintTicks(true);
-        intervalSlider.setPaintLabels(true);
-        intervalSlider.setSnapToTicks(true);
-        intervalSlider.setMajorTickSpacing(100);
-        Map<Integer, JComponent> customLabelTable = new HashMap<>();
-        customLabelTable.put(3, new JLabel("3"));
-        customLabelTable.put(100, new JLabel("100"));
-        customLabelTable.put(200, new JLabel("200"));
-        customLabelTable.put(300, new JLabel("300"));
-        customLabelTable.put(400, new JLabel("400"));
-        customLabelTable.put(500, new JLabel("500"));
-        customLabelTable.put(600, new JLabel("600"));
-        customLabelTable.put(700, new JLabel("700"));
-        customLabelTable.put(800, new JLabel("800"));
-        customLabelTable.put(900, new JLabel("900"));
-        customLabelTable.put(1000, new JLabel("1000"));
-        intervalSlider.setLabelTable(new Hashtable<>(customLabelTable));
         constraints.weightx = 1;
         constraints.weighty = 0;
         constraints.gridx = 0;
@@ -180,8 +158,9 @@ public class TurmiteJFrame extends JFrame {
         add(mainPanel);
     }
 
-    private static void fillRuleSelectorDropdown() {
-        FileHandler.readFileNamesIntoDropdown(ruleSelector, RULESET_DIR, RULESET_EXT);
+    private void attachComponents() {
+        gridPanel.attachRuleInputPanel(ruleInputPanel);
+        ruleSelector.attachRuleInputPanel(ruleInputPanel);
     }
 
     private void setupEventListeners() {
@@ -196,8 +175,11 @@ public class TurmiteJFrame extends JFrame {
 
     private void loadSelectedRulesetFromRuleSelector() {
         try {
-            gridPanel.loadSelectedRuleset(String.format("%s\\%s%s", RULESET_DIR, ruleSelector.getSelectedItem(), RULESET_EXT));
-            ruleInputPanel.setPanelRuleset(gridPanel.getLoadedRuleset());
+            Object selected = ruleSelector.getSelectedItem();
+            if (selected != null && !selected.equals(RuleSelectorDropDown.NEW_RULESET_STR)) {
+                gridPanel.loadSelectedRuleset(String.format("%s\\%s%s", RULESET_DIR, selected, RULESET_EXT));
+                ruleSelector.signalFileLoaded();
+            }
         } catch (FileNotFoundException e) {
             Dialogs.showErrorDialog(this, String.format("File not found: %s%s", ruleSelector.getSelectedItem(), RULESET_EXT));
         }
@@ -212,6 +194,10 @@ public class TurmiteJFrame extends JFrame {
         }
 
         if (fileName == null) return;
+        if (fileName.equals(RuleSelectorDropDown.NEW_RULESET_STR)) {
+            Dialogs.showErrorDialog(this, String.format("Ruleset name cannot be %s.", RuleSelectorDropDown.NEW_RULESET_STR));
+            return;
+        }
 
         try {
             String ruleName = fileName.replace(RULESET_DIR, "").replace("\\", "").replace(RULESET_EXT, "");
@@ -220,7 +206,6 @@ public class TurmiteJFrame extends JFrame {
             ruleSelector.setSelectedIndex(ruleSelector.getItemCount() - 1);
 
             gridPanel.loadSelectedRuleset(fileName);
-            ruleInputPanel.setPanelRuleset(gridPanel.getLoadedRuleset());
 
             Dialogs.showInfoDialog(this, "Ruleset imported successfully!");
         } catch (FileNotFoundException ex) {
@@ -234,6 +219,8 @@ public class TurmiteJFrame extends JFrame {
             Dialogs.showInfoDialog(this, "Ruleset exported successfully!");
         } catch (FileNotFoundException e) {
             Dialogs.showErrorDialog(this, String.format("Error while writing file: %s", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            Dialogs.showErrorDialog(this, e.getMessage());
         }
     }
 
@@ -275,13 +262,12 @@ public class TurmiteJFrame extends JFrame {
 
     public static void main(String[] args) {
         TurmiteJFrame frame = new TurmiteJFrame();
-        fillRuleSelectorDropdown();
         frame.setVisible(true);
         gridPanel.centerMap();
 
         try {
             if (ruleSelector.getItemCount() > 0) {
-                simulator.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
+                gridPanel.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
                 simulator.start();
             }
         } catch (FileNotFoundException e) {

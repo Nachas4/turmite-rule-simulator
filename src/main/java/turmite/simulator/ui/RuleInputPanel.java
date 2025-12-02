@@ -6,10 +6,11 @@ import turmite.simulator.utils.Ruleset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RuleInputPanel extends JPanel {
+    private boolean notSettingPanel = true;
+
     public RuleInputPanel() {
         super();
         setupGUI();
@@ -27,7 +28,6 @@ public class RuleInputPanel extends JPanel {
         for (int row = 0; row < Ruleset.MAX_RULES; row++) {
             cbI = new JComboBox<>();
             cbI.setEnabled(false);
-            cbI.setName(String.format("Rule%d_CurrState", row));
             for (int s = 0; s < Ruleset.MAX_STATES; s++) cbI.addItem(s);
             constraints.gridx = 0;
             constraints.gridy = row;
@@ -35,28 +35,24 @@ public class RuleInputPanel extends JPanel {
 
             cbI = new JComboBox<>();
             cbI.setEnabled(false);
-            cbI.setName(String.format("Rule%d_CurrColor", row));
             for (int c = 0; c < Ruleset.MAX_COLORS; c++) cbI.addItem(c);
             constraints.gridx = 2;
             constraints.gridy = row;
             add(cbI, constraints);
 
             cbC = new JComboBox<>();
-            cbC.setName(String.format("Rule%d_TurnDir", row));
             for (int d = 0; d < Ruleset.SQUARE_GRID_MAX_TURN_DIRS; d++) cbC.addItem(turnDirs.get(d));
             constraints.gridx = 4;
             constraints.gridy = row;
             add(cbC, constraints);
 
             cbI = new JComboBox<>();
-            cbI.setName(String.format("Rule%d_NewColor", row));
             for (int c = 0; c < Ruleset.MAX_COLORS; c++) cbI.addItem(c);
             constraints.gridx = 6;
             constraints.gridy = row;
             add(cbI, constraints);
 
             cbI = new JComboBox<>();
-            cbI.setName(String.format("Rule%d_NewState", row));
             for (int s = 0; s < Ruleset.MAX_STATES; s++) cbI.addItem(s);
             constraints.gridx = 8;
             constraints.gridy = row;
@@ -75,17 +71,17 @@ public class RuleInputPanel extends JPanel {
     // Using Rule.RuleCells insures that the returned JComboBox is of the desired type.
     // The ComboBox is not editable, but filled programmatically, so getSelectedItem() should not return null.
     @SuppressWarnings({"unchecked", "DataFlowIssue"})
-    public List<Rule> getRuleset() {
-        List<Rule> ruleset = new ArrayList<>();
+    public Ruleset getRuleset() {
+        Ruleset ruleset = new Ruleset();
 
         for (int row = 0; row < Ruleset.MAX_RULES; row++) {
-            ruleset.add(new Rule(
+            ruleset.addRule(
                     (int)((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_STATE)).getSelectedItem(),
                     (int)((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_COLOR)).getSelectedItem(),
                     (char)((JComboBox<Character>)getRuleCellFor(row, Rule.RuleCells.TURN_DIR)).getSelectedItem(),
                     (int)((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_COLOR)).getSelectedItem(),
                     (int)((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_STATE)).getSelectedItem()
-            ));
+            );
         }
 
         return ruleset;
@@ -93,13 +89,14 @@ public class RuleInputPanel extends JPanel {
 
     // Using Rule.RuleCells insures that the returned JComboBox is of the desired type.
     @SuppressWarnings("unchecked")
-    public void setPanelRuleset(List<Rule> ruleset) {
+    public void setPanelRuleset(Ruleset ruleset) {
+        notSettingPanel = false;
         resetPanel();
 
         JComboBox<Integer> cbI;
         JComboBox<Character> cbC;
         int row = 0;
-        for (Rule rule : ruleset) {
+        for (Rule rule : ruleset.getRules()) {
             cbI = ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_STATE));
             cbI.setSelectedIndex(indexOfItem(cbI, rule.getCurrState()));
 
@@ -116,6 +113,25 @@ public class RuleInputPanel extends JPanel {
             cbI.setSelectedIndex(indexOfItem(cbI, rule.getNewState()));
 
             row++;
+        }
+
+        onlyEnableNeededRuleRows(ruleset.getNumOfRulesNeeded());
+        notSettingPanel = true;
+    }
+
+    private void onlyEnableNeededRuleRows(int rulesNeeded) {
+        for (int row = 0; row < rulesNeeded; row++) {
+            getRuleCellFor(row, Rule.RuleCells.TURN_DIR).setEnabled(true);
+            getRuleCellFor(row, Rule.RuleCells.NEW_COLOR).setEnabled(true);
+            getRuleCellFor(row, Rule.RuleCells.NEW_STATE).setEnabled(true);
+        }
+
+        for (int row = Ruleset.MAX_RULES - 1; row >= rulesNeeded; row--) {
+            getRuleCellFor(row, Rule.RuleCells.TURN_DIR).setEnabled(false);
+            getRuleCellFor(row, Rule.RuleCells.NEW_COLOR).setEnabled(false);
+            getRuleCellFor(row, Rule.RuleCells.NEW_STATE).setEnabled(false);
+
+            resetRow(row);
         }
     }
 
@@ -139,16 +155,22 @@ public class RuleInputPanel extends JPanel {
         return -1;
     }
 
+    private void resetPanel() {
+        for (int row = 0; row < Ruleset.MAX_RULES; row++) resetRow(row);
+    }
+
     // Using Rule.RuleCells insures that the returned JComboBox is of the desired type.
     @SuppressWarnings("unchecked")
-    private void resetPanel() {
-        for (int row = 0; row < Ruleset.MAX_RULES; row++) {
-            ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_STATE)).setSelectedIndex(0);
-            ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_COLOR)).setSelectedIndex(0);
-            ((JComboBox<Character>)getRuleCellFor(row, Rule.RuleCells.TURN_DIR)).setSelectedIndex(0);
-            ((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_COLOR)).setSelectedIndex(0);
-            ((JComboBox<Integer>) getRuleCellFor(row, Rule.RuleCells.NEW_STATE)).setSelectedIndex(0);
-        }
+    private void resetRow(int row) {
+        ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_STATE)).setSelectedIndex(0);
+        ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.CURR_COLOR)).setSelectedIndex(0);
+        ((JComboBox<Character>)getRuleCellFor(row, Rule.RuleCells.TURN_DIR)).setSelectedIndex(0);
+        ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.NEW_COLOR)).setSelectedIndex(0);
+        ((JComboBox<Integer>)getRuleCellFor(row, Rule.RuleCells.NEW_STATE)).setSelectedIndex(0);
+    }
+
+    public boolean isNotSettingPanel() {
+        return notSettingPanel;
     }
 
     @Override
@@ -159,5 +181,9 @@ public class RuleInputPanel extends JPanel {
             getRuleCellFor(row, Rule.RuleCells.NEW_COLOR).setEnabled(enabled);
             getRuleCellFor(row, Rule.RuleCells.NEW_STATE).setEnabled(enabled);
         }
+
+        notSettingPanel = false;
+        if (enabled) onlyEnableNeededRuleRows(getRuleset().getNumOfRulesNeeded());
+        notSettingPanel = true;
     }
 }

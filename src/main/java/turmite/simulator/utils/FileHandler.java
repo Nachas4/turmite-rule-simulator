@@ -2,6 +2,7 @@ package turmite.simulator.utils;
 
 import turmite.simulator.models.Direction;
 import turmite.simulator.models.Rule;
+import turmite.simulator.ui.RuleSelectorDropDown;
 
 import javax.json.*;
 import javax.json.stream.JsonGenerator;
@@ -11,7 +12,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.Map;
 
 public class FileHandler {
@@ -33,7 +33,7 @@ public class FileHandler {
         return copiedFilePath;
     }
 
-    public static void exportRuleset(JFrame frame, List<Rule> ruleset, String fileDir, String fileExt) throws FileNotFoundException {
+    public static void exportRuleset(JFrame frame, Ruleset ruleset, String fileDir, String fileExt) throws FileNotFoundException, IllegalArgumentException {
         FileDialog fd = new FileDialog(frame, "Export Ruleset", FileDialog.SAVE);
         fd.setDirectory(fileDir);
         fd.setFile("*" + fileExt);
@@ -41,6 +41,7 @@ public class FileHandler {
 
         String rulesetFile = fd.getDirectory() + fd.getFile();
         if (rulesetFile.equals("nullnull")) return;
+        if (fd.getFile().equals(RuleSelectorDropDown.NEW_RULESET_STR + fileExt)) throw new IllegalArgumentException(String.format("Ruleset name cannot be %s.",  RuleSelectorDropDown.NEW_RULESET_STR));
 
         OutputStream outputStream = new FileOutputStream(rulesetFile);
         JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
@@ -48,7 +49,7 @@ public class FileHandler {
         JsonObjectBuilder rulesetObject = Json.createObjectBuilder();
         JsonArrayBuilder rulesetArray = Json.createArrayBuilder();
 
-        for (Rule  rule : ruleset) {
+        for (Rule  rule : ruleset.getRules()) {
             JsonObject ruleObject = Json.createObjectBuilder()
                     .add("currState", rule.getCurrState())
                     .add("currColor", rule.getCurrColor())
@@ -63,14 +64,5 @@ public class FileHandler {
         rulesetObject.add("ruleset", rulesetArray.build());
         writer.write(rulesetObject.build());
         writer.close();
-    }
-
-    public static void readFileNamesIntoDropdown(JComboBox<String> comboBox, String fileDirPath, String fileExt) {
-        File rulesetDir = new File(fileDirPath);
-        File[] files = rulesetDir.listFiles((dir, name) -> name.endsWith(fileExt));
-
-        if (files != null)
-            for (File ruleFile : files)
-                comboBox.addItem(ruleFile.getName().replace(fileExt, ""));
     }
 }
