@@ -157,6 +157,7 @@ public final class Turmite {
 
     public void resetPos() {
         pos.reset();
+        dir = Direction.UP;
     }
 
     public Ruleset getRuleset() {
