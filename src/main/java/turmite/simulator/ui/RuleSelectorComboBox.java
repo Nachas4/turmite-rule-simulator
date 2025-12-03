@@ -1,5 +1,7 @@
 package turmite.simulator.ui;
 
+import turmite.simulator.TurmiteJFrame;
+
 import javax.swing.*;
 import java.io.File;
 
@@ -9,9 +11,11 @@ import java.io.File;
 public class RuleSelectorComboBox extends JComboBox<String> {
     public static final String NEW_RULESET_STR = "NewRuleset";
 
-    public RuleSelectorComboBox(String dir, String ext) {
+    private transient Object prevItem = null;
+
+    public RuleSelectorComboBox(String ext) {
         super();
-        readFileNamesIntoDropdown(dir, ext);
+        readFileNamesIntoDropdown(ext);
     }
 
     /**
@@ -44,19 +48,31 @@ public class RuleSelectorComboBox extends JComboBox<String> {
      * Reads the name of files which have an extension of {@code fileExt}.
      * The rule name cannot be NEW_RULESET_STR.
      *
-     * @param fileDirPath The directory of the files.
      * @param fileExt The accepted extension of the files.
      */
-    private void readFileNamesIntoDropdown(String fileDirPath, String fileExt) {
-        File rulesetDir = new File(fileDirPath);
+    private void readFileNamesIntoDropdown(String fileExt) {
+        File rulesetDir = new File(TurmiteJFrame.RULESET_DIR);
         File[] files = rulesetDir.listFiles((dir, name) -> name.endsWith(fileExt));
 
-        if (files != null) {
+        if (files != null && files.length > 0) {
             for (File ruleFile : files) {
                 String ruleName = ruleFile.getName().replace(fileExt, "");
                 if (!ruleName.equals(NEW_RULESET_STR)) addItem(ruleName);
                 else Dialogs.showInfoDialog(null, "Rule name cannot be NewRuleset.");
             }
+        } else {
+            addItem(NEW_RULESET_STR);
+            setSelectedItem(NEW_RULESET_STR);
         }
+    }
+
+    public Object getPrevItem() {
+        return prevItem;
+    }
+
+    @Override
+    public void setSelectedItem(Object anItem) {
+        prevItem = getSelectedItem();
+        super.setSelectedItem(anItem);
     }
 }

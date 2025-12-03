@@ -21,9 +21,9 @@ public class RuleInputPanel extends JPanel implements ActionListener {
 
     private boolean notSettingPanel = true;
 
-    public RuleInputPanel(String rulesetDir, String rulesetExt) {
+    public RuleInputPanel(String rulesetExt) {
         super();
-        ruleSelectorComboBox = new RuleSelectorComboBox(rulesetDir, rulesetExt);
+        ruleSelectorComboBox = new RuleSelectorComboBox(rulesetExt);
         setupGUI();
         setupEventListeners();
         loadSelectedRuleset();
@@ -135,7 +135,10 @@ public class RuleInputPanel extends JPanel implements ActionListener {
      */
     private void loadSelectedRuleset() {
         Object selected = ruleSelectorComboBox.getSelectedItem();
-        if (selected != null && selected != RuleSelectorComboBox.NEW_RULESET_STR) readRulesetFromFile(selected + TurmiteJFrame.RULESET_EXT);
+        if (selected != null) {
+            if (selected != RuleSelectorComboBox.NEW_RULESET_STR) readRulesetFromFile(selected + TurmiteJFrame.RULESET_EXT);
+            else if (ruleSelectorComboBox.getItemCount() == 1) loadRulesetIntoPanel();
+        }
     }
 
     /**
@@ -152,7 +155,8 @@ public class RuleInputPanel extends JPanel implements ActionListener {
             return true;
         } catch (FileNotFoundException e) {
             Dialogs.showErrorDialog(this, String.format("File not found: %s", fileName));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | Ruleset.InvalidRulesetException e) {
+            ruleSelectorComboBox.setSelectedItem(ruleSelectorComboBox.getPrevItem());
             Dialogs.showErrorDialog(this, e.getMessage());
         }
 
@@ -259,11 +263,11 @@ public class RuleInputPanel extends JPanel implements ActionListener {
      * @param ruleRow The row of the Rule ranging from 0-{@code Ruleset.MAX_RULES}.
      */
     private void resetRow(int ruleRow) {
-        getIntComboBox(ruleRow, Rule.RuleCells.CURR_STATE).setSelectedItem(0);
-        getIntComboBox(ruleRow, Rule.RuleCells.CURR_COLOR).setSelectedItem(0);
-        getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setSelectedItem(0);
-        getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setSelectedItem(0);
-        getIntComboBox(ruleRow, Rule.RuleCells.NEW_STATE).setSelectedItem(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.CURR_STATE).setSelectedIndex(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.CURR_COLOR).setSelectedIndex(0);
+        getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setSelectedIndex(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setSelectedIndex(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_STATE).setSelectedIndex(0);
 
         getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setEnabled(false);
         getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setEnabled(false);
