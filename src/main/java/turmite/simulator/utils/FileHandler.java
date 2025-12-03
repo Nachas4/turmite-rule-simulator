@@ -13,6 +13,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -88,13 +89,14 @@ public class FileHandler {
         JsonObjectBuilder rulesetObject = Json.createObjectBuilder();
         JsonArrayBuilder rulesetArray = Json.createArrayBuilder();
 
+        List<String> ruleNames = Rule.RuleCells.getRuleCellNames();
         for (Rule  rule : ruleset.getRules()) {
             JsonObject ruleObject = Json.createObjectBuilder()
-                    .add("currState", rule.getCurrState())
-                    .add("currColor", rule.getCurrColor())
-                    .add("turnDir", String.valueOf(Direction.getCharFromTurnDir(rule.getTurnDir())))
-                    .add("newColor", rule.getNewColor())
-                    .add("newState", rule.getNewState())
+                    .add(ruleNames.getFirst(), rule.getCurrState())
+                    .add(ruleNames.get(1), rule.getCurrColor())
+                    .add(ruleNames.get(2), String.valueOf(Direction.getCharFromTurnDir(rule.getTurnDir())))
+                    .add(ruleNames.get(3), rule.getNewColor())
+                    .add(ruleNames.getLast(), rule.getNewState())
                     .build();
 
             rulesetArray.add(ruleObject);
