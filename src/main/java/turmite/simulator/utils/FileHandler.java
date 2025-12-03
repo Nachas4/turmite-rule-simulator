@@ -26,7 +26,7 @@ public class FileHandler {
 
         String selectedFilePath = fd.getDirectory() + fd.getFile();
         if (selectedFilePath.equals("nullnull")) return null;
-        if (selectedFilePath.equals(RuleSelectorComboBox.NEW_RULESET_STR + fileExt)) {
+        if (fd.getFile().equals(RuleSelectorComboBox.NEW_RULESET_STR + fileExt)) {
             Dialogs.showErrorDialog(null, String.format("Ruleset name cannot be %s.", RuleSelectorComboBox.NEW_RULESET_STR));
             return null;
         }
