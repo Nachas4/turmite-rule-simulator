@@ -11,6 +11,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class that manages a Ruleset. This includes model and validation.
+ */
 public class Ruleset {
     public static final int MAX_STATES = 3;
     public static final int MAX_COLORS = 3;
@@ -23,6 +26,17 @@ public class Ruleset {
 
     private final List<Rule> rules = new ArrayList<>(MAX_RULES);
 
+    /**
+     * Read a Ruleset from the given file. If a Ruleset is invalid for any reason,
+     * no modification is done to one already loaded.
+     *
+     * @param fileName The name of the Ruleset file.
+     * @throws FileNotFoundException If the file does not exist, is a directory rather than a regular file,
+     * or for some other reason cannot be opened for reading.
+     * @throws IllegalArgumentException If a Rule from the file is not valid.
+     *
+     * @see #validateRuleCells(int, int, char, int, int)
+     */
     public void readRulesetFromFile(String fileName) throws FileNotFoundException, IllegalArgumentException {
         InputStream fileStream = new FileInputStream(String.format("%s/%s", TurmiteJFrame.RULESET_DIR, fileName));
         JsonReader reader = Json.createReader(fileStream);
@@ -55,8 +69,21 @@ public class Ruleset {
         recalculateNumOfStatesAndColors();
     }
 
-    public void changeRuleCell(int ruleNum, Rule.RuleCells cell, Object newValue) throws IllegalArgumentException {
-        Rule rule = rules.get(ruleNum);
+    /**
+     * Change the cell of a Rule to a new value.
+     * <p>
+     * Changing a Rule cell can affect the number of rules needed to cover all {@code currState-currColor} combinations.
+     *
+     * @param ruleRow The row of the Rule ranging from 0-{@code MAX_RULES}.
+     * @param cell The cell of the Rule to change.
+     * @param newValue The new value of the Rule cell.
+     * @throws IllegalArgumentException If the Rule would not be valid with the given {@code newValue}.
+     *
+     * @see #validateRuleCells(int, int, char, int, int)
+     * @see #recalculateRulesetTable()
+     */
+    public void changeRuleCell(int ruleRow, Rule.RuleCells cell, Object newValue) throws IllegalArgumentException {
+        Rule rule = rules.get(ruleRow);
         Rule newRule = switch (cell) {
             case CURR_STATE ->
                     validateRuleCells((int)newValue, rule.getCurrColor(), Direction.getCharFromTurnDir(rule.getTurnDir()), rule.getNewColor(), rule.getNewState());
@@ -74,6 +101,12 @@ public class Ruleset {
         recalculateRulesetTable();
     }
 
+    /**
+     * This method makes sure that enough Rules are available in the Ruleset to cover all {@code currState-currColor}
+     * combinations.
+     * <p>
+     * Unneeded Rule rows are removed, and new ones are added if necessary.
+     */
     private void recalculateRulesetTable() {
         recalculateNumOfStatesAndColors();
         int needed = getNumOfRulesNeeded();
@@ -96,6 +129,9 @@ public class Ruleset {
         }
     }
 
+    /**
+     * Recalculate how many states and colors this Ruleset has.
+     */
     private void recalculateNumOfStatesAndColors() {
         highestState = 0;
         highestColor = 0;
@@ -105,11 +141,37 @@ public class Ruleset {
         }
     }
 
+    /**
+     * Adds a Rule to the Ruleset, if it's valid, and the Ruleset is not full.
+     *
+     * @param currState The currState value.
+     * @param currColor The currColor value.
+     * @param dirChar The dirChar value.
+     * @param newColor The newColor value.
+     * @param newState The newState value.
+     * @throws IllegalArgumentException If the Rule is invalid.
+     */
     private void addRule(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
         if (rules.size() == MAX_RULES) return;
         rules.add(validateRuleCells(currState, currColor, dirChar, newColor, newState));
     }
 
+    /**
+     * Validates a Rule so it doesn't contain invalid values.
+     * <ul>
+     *     <li>{@code currState} and {@code newState} must be in the range {@code 0-MAX_STATES}.</li>
+     *     <li>{@code currColor} and {@code newColor} must be in the range {@code 0-MAX_COLORS}.</li>
+     *     <li>{@link Direction#getSquareGridTurnDirs()} must contain {@code turnDir}.</li>
+     * </ul>
+     *
+     * @param currState The currState value.
+     * @param currColor The currColor value.
+     * @param dirChar The dirChar value.
+     * @param newColor The newColor value.
+     * @param newState The newState value.
+     * @return The validated Rule object.
+     * @throws IllegalArgumentException If the new Rule would be invalid.
+     */
     private Rule validateRuleCells(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
         if (currState >= MAX_STATES || currState < 0)
             throw new IllegalArgumentException(String.format("State cannot be negative or higher than %d (got %d).", MAX_STATES - 1, currState));
@@ -132,15 +194,27 @@ public class Ruleset {
         return new Rule(currState, currColor, dir, newColor, newState);
     }
 
+    /**
+     * @return The number of rules needed to cover all {@code currState-currColor} combinations.
+     */
     public int getNumOfRulesNeeded() {
         return (highestState + 1) * (highestColor + 1);
     }
 
+    /**
+     * @return The List of Rules in the Ruleset.
+     */
     public List<Rule> getRules() {
         return rules;
     }
 
-    public Rule getRule(int ruleNum) {
-        return rules.get(ruleNum);
+    /**
+     * @param ruleRow The row of the Rule ranging from 0-{@code MAX_RULES}.
+     * @return The Rule at the given position.
+     *
+     * @throws IndexOutOfBoundsException If no Rule is found at the given index.
+     */
+    public Rule getRule(int ruleRow) {
+        return rules.get(ruleRow);
     }
 }

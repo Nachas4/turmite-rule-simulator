@@ -12,6 +12,9 @@ import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+/**
+ * A class that manages Rule input, import and export.
+ */
 public class RuleInputPanel extends JPanel implements ActionListener {
     private final RuleSelectorComboBox ruleSelectorComboBox;
     private final transient Ruleset ruleset = new Ruleset();
@@ -71,7 +74,16 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         add(ruleSelectorComboBox, constraints);
     }
 
-    private  <T> void addInputComboBox(T type, GridBagConstraints constraints, int row, int col, boolean enabled) {
+    /**
+     * Adds a new JComboBox of the desired type to the panel.
+     *
+     * @param type The type of the new JComboBox.
+     * @param constraints The GridBagConstraints to use.
+     * @param row The GridBagConstraints row to put the JComboBox in.
+     * @param col The GridBagConstraints column to put the JComboBox in.
+     * @param enabled Whether the new JComboBox is enabled.
+     */
+    private <T> void addInputComboBox(T type, GridBagConstraints constraints, int row, int col, boolean enabled) {
         if (type.equals(Integer.class)) {
             JComboBox<Integer> cbI = new JComboBox<>();
             cbI.setEnabled(enabled);
@@ -117,11 +129,21 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         }
     }
 
+    /**
+     * Loads the Ruleset file with the name selected in the RuleSelectorComboBox.
+     * The Ruleset name cannot be {@code RuleSelectorComboBox.NEW_RULESET_STR}.
+     */
     private void loadSelectedRuleset() {
         Object selected = ruleSelectorComboBox.getSelectedItem();
         if (selected != null && selected != RuleSelectorComboBox.NEW_RULESET_STR) readRulesetFromFile(selected + TurmiteJFrame.RULESET_EXT);
     }
 
+    /**
+     * Reads the Ruleset file with the specified name.
+     *
+     * @param fileName The name of the Ruleset file.
+     * @return Whether the read was successful.
+     */
     public boolean readRulesetFromFile(String fileName) {
         try {
             ruleset.readRulesetFromFile(fileName);
@@ -137,6 +159,9 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         return false;
     }
 
+    /**
+     * Loads the loaded Ruleset into the Input Panel Dropdowns.
+     */
     private void loadRulesetIntoPanel() {
         notSettingPanel = false;
 
@@ -167,6 +192,13 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         notSettingPanel = true;
     }
 
+    /**
+     * Change the cell of a Rule to a new value and load the changed Ruleset into the Input Panel.
+     *
+     * @param ruleRow The row of the Rule ranging from 0-{@code Ruleset.MAX_RULES}.
+     * @param cell The cell of the Rule to change.
+     * @param newValue The new value of the Rule cell.
+     */
     private void handleRuleChange(int ruleRow, Rule.RuleCells cell, Object newValue) {
         try {
             ruleset.changeRuleCell(ruleRow, cell, newValue);
@@ -176,6 +208,16 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         }
     }
 
+    /**
+     * Get the JComboBox of type Integer which is for the cell of the given Rule.
+     *
+     * @param ruleNum The row of the Rule ranging from 0-{@code Ruleset.MAX_RULES}.
+     * @param cell The cell of the Rule to get.
+     * @return A JComboBox of type Integer which is for the cell of the given Rule.
+     *
+     * @throws IllegalArgumentException If the Rule cell is not of type integer, or the JComboBox returned
+     * would not be of type Integer.
+     */
     // Using Rule.RuleCells insures that the returned JComboBox is of the desired type.
     @SuppressWarnings("unchecked")
     private JComboBox<Integer> getIntComboBox(int ruleNum, Rule.RuleCells cell) {
@@ -189,6 +231,16 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         return (JComboBox<Integer>) component;
     }
 
+    /**
+     * Get the JComboBox of type Character which is for the cell of the given Rule.
+     *
+     * @param ruleNum The row of the Rule ranging from 0-{@code Ruleset.MAX_RULES}.
+     * @param cell The cell of the Rule to get.
+     * @return A JComboBox of type Character which is for the cell of the given Rule.
+     *
+     * @throws IllegalArgumentException If the Rule cell is not of type char, or the JComboBox returned
+     * would not be of type Character.
+     */
     // Using Rule.RuleCells insures that the returned JComboBox is of the desired type.
     @SuppressWarnings({"unchecked", "SameParameterValue"})
     private JComboBox<Character> getCharComboBox(int ruleNum, Rule.RuleCells cell) {
@@ -200,22 +252,36 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         return (JComboBox<Character>) component;
     }
 
-    private void resetRow(int row) {
-        getIntComboBox(row, Rule.RuleCells.CURR_STATE).setSelectedItem(0);
-        getIntComboBox(row, Rule.RuleCells.CURR_COLOR).setSelectedItem(0);
-        getCharComboBox(row, Rule.RuleCells.TURN_DIR).setSelectedItem(0);
-        getIntComboBox(row, Rule.RuleCells.NEW_COLOR).setSelectedItem(0);
-        getIntComboBox(row, Rule.RuleCells.NEW_STATE).setSelectedItem(0);
+    /**
+     * Sets the selected item of the JComboBoxes in the row to the first one,
+     * and disables them.
+     *
+     * @param ruleRow The row of the Rule ranging from 0-{@code Ruleset.MAX_RULES}.
+     */
+    private void resetRow(int ruleRow) {
+        getIntComboBox(ruleRow, Rule.RuleCells.CURR_STATE).setSelectedItem(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.CURR_COLOR).setSelectedItem(0);
+        getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setSelectedItem(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setSelectedItem(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_STATE).setSelectedItem(0);
 
-        getCharComboBox(row, Rule.RuleCells.TURN_DIR).setEnabled(false);
-        getIntComboBox(row, Rule.RuleCells.NEW_COLOR).setEnabled(false);
-        getIntComboBox(row, Rule.RuleCells.NEW_STATE).setEnabled(false);
+        getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setEnabled(false);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setEnabled(false);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_STATE).setEnabled(false);
     }
 
+    /**
+     * @return The Ruleset.
+     */
     public Ruleset getRuleset() {
         return ruleset;
     }
 
+    /**
+     * Processes when a Rule cell is modified with a Rule Input JComboBox.
+     *
+     * @param e The event to be processed.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         if (notSettingPanel) {
