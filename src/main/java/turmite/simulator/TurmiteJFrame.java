@@ -32,7 +32,7 @@ public class TurmiteJFrame extends JFrame {
     private static final JPanel rightPanel = new JPanel(new GridBagLayout());
     private static final JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    private static final RuleInputPanel ruleInputPanel = new RuleInputPanel(RULESET_DIR, RULESET_EXT);
+    private static final RuleInputPanel ruleInputPanel = new RuleInputPanel(RULESET_EXT);
     private static final SquareGridPanel gridPanel = new SquareGridPanel(ruleInputPanel);
     private static final JButton importButton = new JButton(IMPORT_STR);
     private static final JButton exportButton = new JButton(EXPORT_STR);

@@ -1,5 +1,7 @@
 package turmite.simulator.ui;
 
+import turmite.simulator.TurmiteJFrame;
+
 import javax.swing.*;
 import java.io.File;
 
@@ -11,9 +13,9 @@ public class RuleSelectorComboBox extends JComboBox<String> {
 
     private transient Object prevItem = null;
 
-    public RuleSelectorComboBox(String dir, String ext) {
+    public RuleSelectorComboBox(String ext) {
         super();
-        readFileNamesIntoDropdown(dir, ext);
+        readFileNamesIntoDropdown(ext);
     }
 
     /**
@@ -46,11 +48,10 @@ public class RuleSelectorComboBox extends JComboBox<String> {
      * Reads the name of files which have an extension of {@code fileExt}.
      * The rule name cannot be NEW_RULESET_STR.
      *
-     * @param fileDirPath The directory of the files.
      * @param fileExt The accepted extension of the files.
      */
-    private void readFileNamesIntoDropdown(String fileDirPath, String fileExt) {
-        File rulesetDir = new File(fileDirPath);
+    private void readFileNamesIntoDropdown(String fileExt) {
+        File rulesetDir = new File(TurmiteJFrame.RULESET_DIR);
         File[] files = rulesetDir.listFiles((dir, name) -> name.endsWith(fileExt));
 
         if (files != null) {

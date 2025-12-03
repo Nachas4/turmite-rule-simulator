@@ -21,9 +21,9 @@ public class RuleInputPanel extends JPanel implements ActionListener {
 
     private boolean notSettingPanel = true;
 
-    public RuleInputPanel(String rulesetDir, String rulesetExt) {
+    public RuleInputPanel(String rulesetExt) {
         super();
-        ruleSelectorComboBox = new RuleSelectorComboBox(rulesetDir, rulesetExt);
+        ruleSelectorComboBox = new RuleSelectorComboBox(rulesetExt);
         setupGUI();
         setupEventListeners();
         loadSelectedRuleset();
