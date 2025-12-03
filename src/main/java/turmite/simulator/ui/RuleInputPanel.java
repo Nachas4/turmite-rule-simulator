@@ -152,7 +152,8 @@ public class RuleInputPanel extends JPanel implements ActionListener {
             return true;
         } catch (FileNotFoundException e) {
             Dialogs.showErrorDialog(this, String.format("File not found: %s", fileName));
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | Ruleset.InvalidRulesetException e) {
+            ruleSelectorComboBox.setSelectedItem(ruleSelectorComboBox.getPrevItem());
             Dialogs.showErrorDialog(this, e.getMessage());
         }
 

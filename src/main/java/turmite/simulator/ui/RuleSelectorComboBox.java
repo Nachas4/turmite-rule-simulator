@@ -9,6 +9,8 @@ import java.io.File;
 public class RuleSelectorComboBox extends JComboBox<String> {
     public static final String NEW_RULESET_STR = "NewRuleset";
 
+    private transient Object prevItem = null;
+
     public RuleSelectorComboBox(String dir, String ext) {
         super();
         readFileNamesIntoDropdown(dir, ext);
@@ -58,5 +60,15 @@ public class RuleSelectorComboBox extends JComboBox<String> {
                 else Dialogs.showInfoDialog(null, "Rule name cannot be NewRuleset.");
             }
         }
+    }
+
+    public Object getPrevItem() {
+        return prevItem;
+    }
+
+    @Override
+    public void setSelectedItem(Object anItem) {
+        prevItem = getSelectedItem();
+        super.setSelectedItem(anItem);
     }
 }

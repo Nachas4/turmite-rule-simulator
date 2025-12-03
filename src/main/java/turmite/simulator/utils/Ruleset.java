@@ -15,6 +15,12 @@ import java.util.List;
  * A class that manages a Ruleset. This includes model and validation.
  */
 public class Ruleset {
+    public static class InvalidRulesetException extends Exception {
+        public InvalidRulesetException(String message) {
+            super(message);
+        }
+    }
+
     public static final int MAX_STATES = 3;
     public static final int MAX_COLORS = 3;
     public static final int MAX_RULES = MAX_STATES * MAX_COLORS;
@@ -25,6 +31,12 @@ public class Ruleset {
     private int highestColor;
 
     private final List<Rule> rules = new ArrayList<>(MAX_RULES);
+
+    public Ruleset() {}
+
+    public Ruleset(List<Rule> rules) {
+        this.rules.addAll(rules);
+    }
 
     /**
      * Read a Ruleset from the given file. If a Ruleset is invalid for any reason,
@@ -37,7 +49,7 @@ public class Ruleset {
      *
      * @see #validateRuleCells(int, int, char, int, int)
      */
-    public void readRulesetFromFile(String fileName) throws FileNotFoundException, IllegalArgumentException {
+    public void readRulesetFromFile(String fileName) throws FileNotFoundException, IllegalArgumentException, InvalidRulesetException {
         InputStream fileStream = new FileInputStream(String.format("%s/%s", TurmiteJFrame.RULESET_DIR, fileName));
         JsonReader reader = Json.createReader(fileStream);
         JsonObject rulesetObj = reader.readObject();
@@ -59,14 +71,15 @@ public class Ruleset {
                         ruleObj.getInt(ruleNames.getLast())
                 );
             } catch (IllegalArgumentException e) {
-                rules.clear();
-                rules.addAll(rulesSnapshot);
+                resetToSnapshot(rulesSnapshot);
                 throw e;
             }
         }
 
         reader.close();
-        recalculateNumOfStatesAndColors();
+
+        if (!validateRuleset(rulesSnapshot))
+            throw new InvalidRulesetException("The Ruleset does not cover every {currState-currColor} combination and/or does not have the number of Rules needed (highestState * highestColor).");
     }
 
     /**
@@ -192,6 +205,46 @@ public class Ruleset {
         };
 
         return new Rule(currState, currColor, dir, newColor, newState);
+    }
+
+    /**
+     * Validates the loaded Ruleset. If it is, then no action is needed.
+     * <p>
+     * But if the Ruleset is invalid, it is reset to a snapshot.
+     *
+     * @param rulesSnapshot The snapshot to reset to if the Ruleset is invalid.
+     * @return Whether the Ruleset is valid.
+     */
+    private boolean validateRuleset(List<Rule> rulesSnapshot) {
+        recalculateNumOfStatesAndColors();
+        int needed = getNumOfRulesNeeded();
+        if (needed != rules.size()) {
+            resetToSnapshot(rulesSnapshot);
+            return false;
+        }
+
+        Ruleset rulesetSnapshot = new Ruleset(rules);
+        recalculateRulesetTable();
+
+        for (int i = 0; i < rules.size(); i++)
+            if (!rules.get(i).equals(rulesetSnapshot.getRule(i))) {
+                resetToSnapshot(rulesSnapshot);
+                return false;
+            }
+
+        return true;
+    }
+
+    /**
+     * Reverts the Ruleset to a snapshot state.
+     *
+     * @param rulesSnapshot The snapshot.
+     */
+    private void resetToSnapshot(List<Rule> rulesSnapshot) {
+        rules.clear();
+        rules.addAll(rulesSnapshot);
+        recalculateNumOfStatesAndColors();
+        recalculateRulesetTable();
     }
 
     /**
