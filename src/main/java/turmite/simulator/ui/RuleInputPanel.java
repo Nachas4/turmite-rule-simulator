@@ -135,7 +135,10 @@ public class RuleInputPanel extends JPanel implements ActionListener {
      */
     private void loadSelectedRuleset() {
         Object selected = ruleSelectorComboBox.getSelectedItem();
-        if (selected != null && selected != RuleSelectorComboBox.NEW_RULESET_STR) readRulesetFromFile(selected + TurmiteJFrame.RULESET_EXT);
+        if (selected != null) {
+            if (selected != RuleSelectorComboBox.NEW_RULESET_STR) readRulesetFromFile(selected + TurmiteJFrame.RULESET_EXT);
+            else if (ruleSelectorComboBox.getItemCount() == 1) loadRulesetIntoPanel();
+        }
     }
 
     /**

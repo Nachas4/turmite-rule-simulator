@@ -32,7 +32,9 @@ public class Ruleset {
 
     private final List<Rule> rules = new ArrayList<>(MAX_RULES);
 
-    public Ruleset() {}
+    public Ruleset() {
+        rules.add(new Rule());
+    }
 
     public Ruleset(List<Rule> rules) {
         this.rules.addAll(rules);
@@ -96,14 +98,7 @@ public class Ruleset {
      * @see #recalculateRulesetTable()
      */
     public void changeRuleCell(int ruleRow, Rule.RuleCells cell, Object newValue) throws IllegalArgumentException {
-        Rule rule;
-
-        try {
-            rule = rules.get(ruleRow);
-        } catch (IndexOutOfBoundsException e) {
-            addRule(0, 0, Direction.getSquareGridTurnDirs().getFirst(), 0, 0);
-            rule = rules.getFirst();
-        }
+        Rule rule = rules.get(ruleRow);
 
         Rule newRule = switch (cell) {
             case CURR_STATE ->

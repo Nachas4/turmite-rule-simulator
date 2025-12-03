@@ -33,6 +33,14 @@ public class Rule {
         public static List<String> getRuleCellNames() { return new ArrayList<>(List.of("currState", "currColor", "turnDir", "newColor", "newState")); }
     }
 
+    public Rule() {
+        this.currState = 0;
+        this.currColor = 0;
+        this.turnDir = Direction.LEFT;
+        this.newColor = 0;
+        this.newState = 0;
+    }
+
     public Rule(int currState, int currColor, Direction turnDir, int newColor, int newState) {
         this.currState = currState;
         this.currColor = currColor;
