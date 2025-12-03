@@ -1,10 +1,10 @@
 package turmite.simulator.utils;
 
+import turmite.simulator.TurmiteJFrame;
 import turmite.simulator.models.Direction;
 import turmite.simulator.models.Rule;
 
 import javax.json.*;
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -23,37 +23,36 @@ public class Ruleset {
 
     private final List<Rule> rules = new ArrayList<>(MAX_RULES);
 
-    public void readRulesetFromFile(String src) throws FileNotFoundException {
-        clearRules();
-
-        InputStream fileStream = new FileInputStream(src);
+    public void readRulesetFromFile(String fileName) throws FileNotFoundException, IllegalArgumentException {
+        InputStream fileStream = new FileInputStream(String.format("%s/%s", TurmiteJFrame.RULESET_DIR, fileName));
         JsonReader reader = Json.createReader(fileStream);
         JsonObject rulesetObj = reader.readObject();
 
         JsonArray ruleset = rulesetObj.getJsonArray("ruleset");
 
+        List<Rule> rulesSnapshot = new ArrayList<>(rules);
+        rules.clear();
+
         for (JsonValue rule : ruleset) {
             JsonObject ruleObj = (JsonObject) rule;
-            addRule(
-                    ruleObj.getInt("currState"),
-                    ruleObj.getInt("currColor"),
-                    ruleObj.getString("turnDir").charAt(0),
-                    ruleObj.getInt("newColor"),
-                    ruleObj.getInt("newState")
-            );
+            try {
+                List<String> ruleNames = Rule.RuleCells.getRuleCellNames();
+                addRule(
+                        ruleObj.getInt(ruleNames.getFirst()),
+                        ruleObj.getInt(ruleNames.get(1)),
+                        ruleObj.getString(ruleNames.get(2)).charAt(0),
+                        ruleObj.getInt(ruleNames.get(3)),
+                        ruleObj.getInt(ruleNames.getLast())
+                );
+            } catch (IllegalArgumentException e) {
+                rules.clear();
+                rules.addAll(rulesSnapshot);
+                throw e;
+            }
         }
 
         reader.close();
-
-        calculateNumOfStatesAndColors();
-    }
-
-    public void addRule(int currState, int currColor, char dirChar, int newColor, int newState) {
-        if (rules.size() < MAX_RULES) {
-            Rule rule = validateRuleCells(currState, currColor, dirChar, newColor, newState);
-            calculateNumOfStatesAndColors();
-            rules.add(rule);
-        }
+        recalculateNumOfStatesAndColors();
     }
 
     public void changeRuleCell(int ruleNum, Rule.RuleCells cell, Object newValue) throws IllegalArgumentException {
@@ -72,18 +71,43 @@ public class Ruleset {
         };
 
         rules.set(rules.indexOf(rule), newRule);
-        calculateNumOfStatesAndColors();
+        recalculateRulesetTable();
     }
 
-    private void calculateNumOfStatesAndColors() {
+    private void recalculateRulesetTable() {
+        recalculateNumOfStatesAndColors();
+        int needed = getNumOfRulesNeeded();
+        int diff = rules.size() - needed;
+
+        if (diff > 0) for (int i = 0; i < diff; i++) rules.removeLast();
+
+        int row = 0;
+        int currRuleSize = rules.size();
+        for (int i = 0; i < highestState + 1; i++) {
+            for (int j = 0; j < highestColor + 1; j++) {
+                if (row < currRuleSize) {
+                    rules.get(row).setCurrState(i);
+                    rules.get(row).setCurrColor(j);
+                }
+                else rules.add(new Rule(i, j, Direction.LEFT, 0, 0));
+
+                row++;
+            }
+        }
+    }
+
+    private void recalculateNumOfStatesAndColors() {
         highestState = 0;
         highestColor = 0;
         for (Rule rule : rules) {
-            if (rule.getCurrState() > highestState) highestState = rule.getCurrState();
             if (rule.getNewState() > highestState) highestState = rule.getNewState();
-            if (rule.getCurrColor() > highestColor) highestColor = rule.getCurrColor();
             if (rule.getNewColor() > highestColor) highestColor = rule.getNewColor();
         }
+    }
+
+    private void addRule(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
+        if (rules.size() == MAX_RULES) return;
+        rules.add(validateRuleCells(currState, currColor, dirChar, newColor, newState));
     }
 
     private Rule validateRuleCells(int currState, int currColor, char dirChar, int newColor, int newState) throws IllegalArgumentException {
@@ -108,15 +132,6 @@ public class Ruleset {
         return new Rule(currState, currColor, dir, newColor, newState);
     }
 
-    public static Color numToColor(int num) {
-        return switch (num) {
-            case 0 -> Color.WHITE;
-            case 1 -> Color.BLACK;
-            case 2 -> Color.YELLOW;
-            default -> throw new IllegalArgumentException("No Color found for value: " + num);
-        };
-    }
-
     public int getNumOfRulesNeeded() {
         return (highestState + 1) * (highestColor + 1);
     }
@@ -125,7 +140,7 @@ public class Ruleset {
         return rules;
     }
 
-    private void clearRules() {
-        rules.clear();
+    public Rule getRule(int ruleNum) {
+        return rules.get(ruleNum);
     }
 }

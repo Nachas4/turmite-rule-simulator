@@ -3,13 +3,14 @@ package turmite.simulator.models;
 import turmite.simulator.utils.Ruleset;
 
 public final class Turmite {
-    private final Ruleset ruleset = new Ruleset();
+    private final Ruleset ruleset;
 
     private final Grid pos;
     private Direction dir;
     private int state;
 
-    public Turmite(Grid pos) {
+    public Turmite(Grid pos, Ruleset ruleset) {
+        this.ruleset = ruleset;
         this.pos = pos;
         dir = Direction.UP;
         state = 0;
@@ -67,17 +68,22 @@ public final class Turmite {
     }
 
     private void calculateNextState(int currColor) {
-        for (Rule rule : ruleset.getRules())
-            if (rule.getCurrState() == state && rule.getCurrColor() == currColor)
+        for (Rule rule : ruleset.getRules()) {
+            if (rule.getCurrState() == state && rule.getCurrColor() == currColor) {
                 state = rule.getNewState();
+                return;
+            }
+        }
     }
 
     public int calculateNextColor(int currColor) {
         int newColor = -1;
 
         for (Rule rule : ruleset.getRules())
-            if (rule.getCurrState() == state && rule.getCurrColor() == currColor)
+            if (rule.getCurrState() == state && rule.getCurrColor() == currColor) {
                 newColor = rule.getNewColor();
+                break;
+            }
 
         return newColor;
     }
@@ -159,9 +165,5 @@ public final class Turmite {
         pos.reset();
         dir = Direction.UP;
         state = 0;
-    }
-
-    public Ruleset getRuleset() {
-        return ruleset;
     }
 }

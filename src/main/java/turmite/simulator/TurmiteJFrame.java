@@ -17,16 +17,15 @@ public class TurmiteJFrame extends JFrame {
     private static final String IMPORT_STR = "Import";
     private static final String EXPORT_STR = "Export";
 
-    private static final String RULESET_DIR = "rulesets";
-    private static final String RULESET_EXT = ".json";
+    public static final String RULESET_DIR = "rulesets";
+    public static final String RULESET_EXT = ".json";
 
-    private static final SquareGridPanel gridPanel = new SquareGridPanel();
     private static final JPanel leftPanel = new JPanel(new GridBagLayout());
     private static final JPanel rightPanel = new JPanel(new GridBagLayout());
     private static final JPanel mainPanel = new JPanel(new GridBagLayout());
 
-    private static final RuleSelectorDropDown ruleSelector = new RuleSelectorDropDown(RULESET_DIR, RULESET_EXT);
-    private static final RuleInputPanel ruleInputPanel = new RuleInputPanel();
+    private static final RuleInputPanel ruleInputPanel = new RuleInputPanel(RULESET_DIR, RULESET_EXT);
+    private static final SquareGridPanel gridPanel = new SquareGridPanel(ruleInputPanel);
     private static final Button importButton = new Button(IMPORT_STR);
     private static final Button exportButton = new Button(EXPORT_STR);
 
@@ -40,7 +39,6 @@ public class TurmiteJFrame extends JFrame {
     public TurmiteJFrame() {
         super("Turmite Simulator");
         setupGUI();
-        attachComponents();
         setupEventListeners();
     }
 
@@ -115,20 +113,12 @@ public class TurmiteJFrame extends JFrame {
         buttonPanel.add(intervalSlider, constraints);
 
         constraints.gridwidth = 1;
-
-        constraints.weightx = 1;
-        constraints.weighty = 0;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        insets.set(0, 50, 50, 50);
-        rightPanel.add(ruleSelector, constraints);
-
         insets.set(0, 0, 0, 0);
 
         constraints.weightx = 0;
         constraints.weighty = 0;
         constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridy = 0;
         rightPanel.add(ruleInputPanel, constraints);
 
         insets.set(0, 50, 0, 50);
@@ -158,31 +148,13 @@ public class TurmiteJFrame extends JFrame {
         add(mainPanel);
     }
 
-    private void attachComponents() {
-        gridPanel.attachRuleInputPanel(ruleInputPanel);
-        ruleSelector.attachRuleInputPanel(ruleInputPanel);
-    }
-
     private void setupEventListeners() {
-        ruleSelector.addActionListener(e -> loadSelectedRulesetFromRuleSelector());
         importButton.addActionListener(e -> importRulesetFromFileDialog());
         exportButton.addActionListener(e -> exportRulesetWithFileDialog());
         toggleSimButton.addActionListener(e -> toggleSimulation());
         stepSimButton.addActionListener(e -> stepSimulation());
         resetSimButton.addActionListener(e -> resetSimulation());
         intervalSlider.addChangeListener(e -> changeSimulationSpeed());
-    }
-
-    private void loadSelectedRulesetFromRuleSelector() {
-        try {
-            Object selected = ruleSelector.getSelectedItem();
-            if (selected != null && !selected.equals(RuleSelectorDropDown.NEW_RULESET_STR)) {
-                gridPanel.loadSelectedRuleset(String.format("%s\\%s%s", RULESET_DIR, selected, RULESET_EXT));
-                ruleSelector.signalFileLoaded();
-            }
-        } catch (FileNotFoundException e) {
-            Dialogs.showErrorDialog(this, String.format("File not found: %s%s", ruleSelector.getSelectedItem(), RULESET_EXT));
-        }
     }
 
     private void importRulesetFromFileDialog() {
@@ -194,23 +166,8 @@ public class TurmiteJFrame extends JFrame {
         }
 
         if (fileName == null) return;
-        if (fileName.equals(RuleSelectorDropDown.NEW_RULESET_STR)) {
-            Dialogs.showErrorDialog(this, String.format("Ruleset name cannot be %s.", RuleSelectorDropDown.NEW_RULESET_STR));
-            return;
-        }
 
-        try {
-            String ruleName = fileName.replace(RULESET_DIR, "").replace("\\", "").replace(RULESET_EXT, "");
-            ruleSelector.removeItem(ruleName);
-            ruleSelector.addItem(ruleName);
-            ruleSelector.setSelectedIndex(ruleSelector.getItemCount() - 1);
-
-            gridPanel.loadSelectedRuleset(fileName);
-
-            Dialogs.showInfoDialog(this, "Ruleset imported successfully!");
-        } catch (FileNotFoundException ex) {
-            Dialogs.showErrorDialog(this, String.format("File not found: %s.json", fileName));
-        }
+        if (ruleInputPanel.readRulesetFromFile(fileName.replace(RULESET_DIR + "\\", ""))) Dialogs.showInfoDialog(this, "Ruleset imported successfully!");
     }
 
     private void exportRulesetWithFileDialog() {
@@ -240,19 +197,16 @@ public class TurmiteJFrame extends JFrame {
             resetSimButton.setEnabled(false);
         }
 
-        ruleSelector.setEnabled(false);
         ruleInputPanel.setEnabled(false);
     }
 
     private void stepSimulation() {
         simulator.stepSimulation();
-        ruleSelector.setEnabled(false);
         ruleInputPanel.setEnabled(false);
     }
 
     private void resetSimulation() {
         simulator.resetSimulation();
-        ruleSelector.setEnabled(true);
         ruleInputPanel.setEnabled(true);
     }
 
@@ -264,14 +218,6 @@ public class TurmiteJFrame extends JFrame {
         TurmiteJFrame frame = new TurmiteJFrame();
         frame.setVisible(true);
         gridPanel.centerMap();
-
-        try {
-            if (ruleSelector.getItemCount() > 0) {
-                gridPanel.loadSelectedRuleset(RULESET_DIR + "\\" + ruleSelector.getItemAt(0) + RULESET_EXT);
-                simulator.start();
-            }
-        } catch (FileNotFoundException e) {
-            Dialogs.showErrorDialog(frame, String.format("File not found: %s%s", ruleSelector.getItemAt(0), RULESET_DIR));
-        }
+        simulator.start();
     }
 }

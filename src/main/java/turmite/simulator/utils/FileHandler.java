@@ -2,7 +2,8 @@ package turmite.simulator.utils;
 
 import turmite.simulator.models.Direction;
 import turmite.simulator.models.Rule;
-import turmite.simulator.ui.RuleSelectorDropDown;
+import turmite.simulator.ui.Dialogs;
+import turmite.simulator.ui.RuleSelectorComboBox;
 
 import javax.json.*;
 import javax.json.stream.JsonGenerator;
@@ -25,6 +26,10 @@ public class FileHandler {
 
         String selectedFilePath = fd.getDirectory() + fd.getFile();
         if (selectedFilePath.equals("nullnull")) return null;
+        if (selectedFilePath.equals(RuleSelectorComboBox.NEW_RULESET_STR + fileExt)) {
+            Dialogs.showErrorDialog(null, String.format("Ruleset name cannot be %s.", RuleSelectorComboBox.NEW_RULESET_STR));
+            return null;
+        }
 
         File selectedFile = new File(selectedFilePath);
         String copiedFilePath = String.format("%s\\%s", fileDir, selectedFile.getName());
@@ -41,7 +46,7 @@ public class FileHandler {
 
         String rulesetFile = fd.getDirectory() + fd.getFile();
         if (rulesetFile.equals("nullnull")) return;
-        if (fd.getFile().equals(RuleSelectorDropDown.NEW_RULESET_STR + fileExt)) throw new IllegalArgumentException(String.format("Ruleset name cannot be %s.",  RuleSelectorDropDown.NEW_RULESET_STR));
+        if (fd.getFile().equals(RuleSelectorComboBox.NEW_RULESET_STR + fileExt)) throw new IllegalArgumentException(String.format("Ruleset name cannot be %s.",  RuleSelectorComboBox.NEW_RULESET_STR));
 
         OutputStream outputStream = new FileOutputStream(rulesetFile);
         JsonWriterFactory writerFactory = Json.createWriterFactory(Map.of(JsonGenerator.PRETTY_PRINTING, true));
@@ -53,7 +58,7 @@ public class FileHandler {
             JsonObject ruleObject = Json.createObjectBuilder()
                     .add("currState", rule.getCurrState())
                     .add("currColor", rule.getCurrColor())
-                    .add("turnDir", Direction.getCharFromTurnDir(rule.getTurnDir()))
+                    .add("turnDir", String.valueOf(Direction.getCharFromTurnDir(rule.getTurnDir())))
                     .add("newColor", rule.getNewColor())
                     .add("newState", rule.getNewState())
                     .build();
