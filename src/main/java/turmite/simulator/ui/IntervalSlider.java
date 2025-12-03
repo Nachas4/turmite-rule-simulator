@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+/**
+ * A JSlider with custom labels.
+ */
 public class IntervalSlider extends JSlider {
     public IntervalSlider(int min, int max, int value) {
         super(min, max, value);

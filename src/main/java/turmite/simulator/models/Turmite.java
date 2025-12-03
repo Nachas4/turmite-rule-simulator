@@ -2,6 +2,9 @@ package turmite.simulator.models;
 
 import turmite.simulator.utils.Ruleset;
 
+/**
+ * A class that represents a Turmite.
+ */
 public final class Turmite {
     private final Ruleset ruleset;
 
@@ -16,6 +19,12 @@ public final class Turmite {
         state = 0;
     }
 
+    /**
+     * The method calculates the new State and Direction of the Turmite based on
+     * its internal State and {@code currColor}, then moves it.
+     *
+     * @param currColor The Color the Turmite is currently standing on.
+     */
     public void move(int currColor) {
         calculateNextDirection(currColor);
         calculateNextState(currColor);
@@ -38,18 +47,33 @@ public final class Turmite {
         }
     }
 
+    /**
+     * @return The Grid the Turmite is standing on.
+     */
     public Grid getGrid() {
         return pos;
     }
 
+    /**
+     * @return The X coordinate of the Turmite.
+     */
     public int getX() {
         return pos.getX();
     }
 
+    /**
+     * @return The Y coordinate of the Turmite.
+     */
     public int getY() {
         return pos.getY();
     }
 
+    /**
+     * Turns the Turmite based on its internal State and the Color of the Grid it is currently
+     * standing on using the Ruleset.
+     *
+     * @param currColor The Color the Turmite is currently standing on.
+     */
     private void calculateNextDirection(int currColor) {
         for (Rule rule : ruleset.getRules()) {
             if (rule.getCurrState() == state && rule.getCurrColor() == currColor) {
@@ -67,6 +91,12 @@ public final class Turmite {
         }
     }
 
+    /**
+     * Calculates the next State of the Turmite based on its internal State and the Color of the Grid it is currently
+     * standing on using the Ruleset.
+     *
+     * @param currColor The Color the Turmite is currently standing on.
+     */
     private void calculateNextState(int currColor) {
         for (Rule rule : ruleset.getRules()) {
             if (rule.getCurrState() == state && rule.getCurrColor() == currColor) {
@@ -76,6 +106,13 @@ public final class Turmite {
         }
     }
 
+    /**
+     * Calculates the Color to paint the current Grid based on the Turmite's internal State and the Color of
+     * the Grid it is currently standing on using the Ruleset.
+     *
+     * @param currColor The Color the Turmite is currently standing on.
+     * @return The Color to paint the Grid before the Turmite moves.
+     */
     public int calculateNextColor(int currColor) {
         int newColor = -1;
 
@@ -88,6 +125,9 @@ public final class Turmite {
         return newColor;
     }
 
+    /**
+     * Turns the Turmite left.
+     */
     private void turnLeft() {
         switch (dir) {
             case UP:
@@ -107,6 +147,10 @@ public final class Turmite {
         }
     }
 
+
+    /**
+     * Turns the Turmite right.
+     */
     private void turnRight() {
         switch (dir) {
             case UP:
@@ -126,6 +170,9 @@ public final class Turmite {
         }
     }
 
+    /**
+     * Turns the Turmite back (180deg).
+     */
     private void turnBack() {
         switch (dir) {
             case UP:
@@ -145,22 +192,38 @@ public final class Turmite {
         }
     }
 
+
+    /**
+     * Moves the Turmite up one Grid.
+     */
     private void moveUp() {
         pos.moveUp();
     }
 
+    /**
+     * Moves the Turmite down one Grid.
+     */
     private void moveDown() {
         pos.moveDown();
     }
 
+    /**
+     * Moves the Turmite left one Grid.
+     */
     private void moveLeft() {
         pos.moveLeft();
     }
 
+    /**
+     * Moves the Turmite right one Grid.
+     */
     private void moveRight() {
         pos.moveRight();
     }
 
+    /**
+     * Reset the Turmite to its default. Position, Direction and State are affected.
+     */
     public void reset() {
         pos.reset();
         dir = Direction.UP;

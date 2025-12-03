@@ -13,6 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
+/**
+ * The main JFrame of the application.
+ */
 public class TurmiteJFrame extends JFrame {
     private static final String START_STR = "Start";
     private static final String PAUSE_STR = "Pause";
@@ -184,6 +187,9 @@ public class TurmiteJFrame extends JFrame {
         snapPictureButton.addActionListener(e -> snapPicture());
     }
 
+    /**
+     * Import a Ruleset file.
+     */
     private void importRulesetFromFileDialog() {
         String fileName = null;
         try {
@@ -197,6 +203,9 @@ public class TurmiteJFrame extends JFrame {
         if (ruleInputPanel.readRulesetFromFile(fileName.replace(RULESET_DIR + "\\", ""))) Dialogs.showInfoDialog(this, "Ruleset imported successfully!");
     }
 
+    /**
+     * Export the current Ruleset into a file.
+     */
     private void exportRulesetWithFileDialog() {
         try {
             FileHandler.exportRuleset(this, ruleInputPanel.getRuleset(), RULESET_DIR, RULESET_EXT);
@@ -208,6 +217,9 @@ public class TurmiteJFrame extends JFrame {
         }
     }
 
+    /**
+     * Toggle whether the simulation is running.
+     */
     private void toggleSimulation() {
         if (simulator.toggleSimulation()) {
             toggleSimButton.setText(START_STR);
@@ -226,11 +238,17 @@ public class TurmiteJFrame extends JFrame {
         ruleInputPanel.setEnabled(false);
     }
 
+    /**
+     * Step the simulation one step.
+     */
     private void stepSimulation() {
         simulator.stepSimulation();
         ruleInputPanel.setEnabled(false);
     }
 
+    /**
+     * Reset the simulation.
+     */
     private void resetSimulation() {
         simulator.resetSimulation();
         ruleInputPanel.setEnabled(true);
@@ -238,10 +256,16 @@ public class TurmiteJFrame extends JFrame {
         exportButton.setEnabled(true);
     }
 
+    /**
+     * Change the speed of the simulation.
+     */
     private void changeSimulationSpeed() {
         simulator.setInterval(intervalSlider.getValue());
     }
 
+    /**
+     * Take a picture of the Grid Panel.
+     */
     private void snapPicture() {
         BufferedImage bi = new BufferedImage(gridPanel.getSize().width, gridPanel.getSize().height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bi.createGraphics();

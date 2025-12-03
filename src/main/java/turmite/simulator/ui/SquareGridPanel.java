@@ -11,6 +11,9 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A class that represents a Square Grid Panel with a Turmite.
+ */
 public class SquareGridPanel extends JPanel {
     private static final double DEFAULT_ZOOM = 2;
 
@@ -53,6 +56,11 @@ public class SquareGridPanel extends JPanel {
         });
     }
 
+    /**
+     * Calculates the offsets for panning the panel.
+     *
+     * @param e The MouseEvent data.
+     */
     private void calculatePan(MouseEvent e) {
         int gridPanelMouseX = e.getX();
         int gridPanelMouseY = e.getY();
@@ -66,6 +74,12 @@ public class SquareGridPanel extends JPanel {
         repaint();
     }
 
+    /**
+     * Calculates the zoom and offsets for zooming the panel.
+     * Whatever Point was under the mouse pointer is kept under it.
+     *
+     * @param e The MouseWheelEvent data.
+     */
     private void calculateZoom(MouseWheelEvent e) {
         // Calculate zoom
         double prevZoom = zoom;
@@ -118,6 +132,9 @@ public class SquareGridPanel extends JPanel {
      * Simulation Methods
      */
 
+    /**
+     * Paints the Grid to the Color based on the Turmite's Ruleset, and moves it.
+     */
     public void stepSimulation() {
         Grid currTurmiteGrid = turmite.getGrid();
         int gridColor = grids.getOrDefault(currTurmiteGrid, 0);
@@ -126,15 +143,27 @@ public class SquareGridPanel extends JPanel {
         turmite.move(gridColor);
     }
 
+    /**
+     * Colors the Grid with the given Color.
+     *
+     * @param grid The grid to color.
+     * @param color The color to use.
+     */
     private void setColorAt(Grid grid, int color) {
         grids.put(grid, color);
     }
 
+    /**
+     * Centers the panel on.
+     */
     public void centerMap() {
         offsetX = ((double) getWidth() / 2) - (gridSize * 1.5);
         offsetY = ((double) getHeight() / 2) - (gridSize * 1.5);
     }
 
+    /**
+     * Resets the panel. The Turmite and panel zoom are reset, all grids are cleared and the map is centered.
+     */
     public void reset() {
         grids.clear();
         turmite.reset();
