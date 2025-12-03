@@ -196,15 +196,10 @@ public class Ruleset {
         if (currColor >= MAX_COLORS || currColor < 0)
             throw new IllegalArgumentException(String.format("Color cannot be negative or higher than %d (got %d).", MAX_COLORS - 1, currColor));
 
-        Direction dir = switch (dirChar) {
-            case 'L' -> Direction.LEFT;
-            case 'R' -> Direction.RIGHT;
-            case 'N' -> Direction.NO_TURN;
-            case 'U' -> Direction.U_TURN;
-            default -> throw new IllegalArgumentException(String.format("The provided Direction is not valid: %s", dirChar));
-        };
+        List<Character> turnDirs = Direction.getSquareGridTurnDirs();
+        if (!turnDirs.contains(dirChar)) throw new IllegalArgumentException(String.format("The provided Direction is not valid: %s", dirChar));
 
-        return new Rule(currState, currColor, dir, newColor, newState);
+        return new Rule(currState, currColor, Direction.getTurnDirFromChar(dirChar), newColor, newState);
     }
 
     /**
