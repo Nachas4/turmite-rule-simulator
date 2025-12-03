@@ -26,12 +26,12 @@ public class TurmiteJFrame extends JFrame {
 
     private static final RuleInputPanel ruleInputPanel = new RuleInputPanel(RULESET_DIR, RULESET_EXT);
     private static final SquareGridPanel gridPanel = new SquareGridPanel(ruleInputPanel);
-    private static final Button importButton = new Button(IMPORT_STR);
-    private static final Button exportButton = new Button(EXPORT_STR);
+    private static final JButton importButton = new JButton(IMPORT_STR);
+    private static final JButton exportButton = new JButton(EXPORT_STR);
 
-    private static final Button toggleSimButton = new Button(START_STR);
-    private static final Button stepSimButton = new Button(STEP_STR);
-    private static final Button resetSimButton = new Button(RESET_STR);
+    private static final JButton toggleSimButton = new JButton(START_STR);
+    private static final JButton stepSimButton = new JButton(STEP_STR);
+    private static final JButton resetSimButton = new JButton(RESET_STR);
     private static final IntervalSlider intervalSlider = new IntervalSlider(3, 1000, 100);
 
     private static final Simulator simulator = new Simulator(gridPanel, intervalSlider.getValue());
@@ -86,18 +86,21 @@ public class TurmiteJFrame extends JFrame {
 
         insets.set(0, 20, 0, 20);
 
+        toggleSimButton.setFocusPainted(false);
         constraints.weightx = 0.4;
         constraints.weighty = 0;
         constraints.gridx = 0;
         constraints.gridy = 0;
         buttonPanel.add(toggleSimButton, constraints);
 
+        stepSimButton.setFocusPainted(false);
         constraints.weightx = 0.4;
         constraints.weighty = 0;
         constraints.gridx = 1;
         constraints.gridy = 0;
         buttonPanel.add(stepSimButton, constraints);
 
+        resetSimButton.setFocusPainted(false);
         constraints.weightx = 0.2;
         constraints.weighty = 0;
         constraints.gridx = 2;
@@ -125,12 +128,14 @@ public class TurmiteJFrame extends JFrame {
 
         JPanel buttonHolderPanel = new JPanel(new GridBagLayout());
 
+        importButton.setFocusPainted(false);
         constraints.weightx = 0.5;
         constraints.weighty = 0;
         constraints.gridx = 0;
         constraints.gridy = 0;
         buttonHolderPanel.add(importButton, constraints);
 
+        exportButton.setFocusPainted(false);
         constraints.weightx = 0.5;
         constraints.weighty = 0;
         constraints.gridx = 1;
@@ -183,14 +188,14 @@ public class TurmiteJFrame extends JFrame {
 
     private void toggleSimulation() {
         if (simulator.toggleSimulation()) {
-            toggleSimButton.setLabel(START_STR);
+            toggleSimButton.setText(START_STR);
             importButton.setEnabled(true);
             exportButton.setEnabled(true);
             stepSimButton.setEnabled(true);
             resetSimButton.setEnabled(true);
         }
         else {
-            toggleSimButton.setLabel(PAUSE_STR);
+            toggleSimButton.setText(PAUSE_STR);
             importButton.setEnabled(false);
             exportButton.setEnabled(false);
             stepSimButton.setEnabled(false);
