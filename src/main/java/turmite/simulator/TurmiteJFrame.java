@@ -61,21 +61,21 @@ public class TurmiteJFrame extends JFrame {
         Insets insets = new Insets(0, 0, 0, 0);
         constraints.insets = insets;
 
-        leftPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        leftPanel.setBackground(Color.GRAY);
         constraints.weightx = 0.8;
         constraints.weighty = 1;
         constraints.gridx = 0;
         constraints.gridy = 0;
         mainPanel.add(leftPanel, constraints);
 
-        rightPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+        rightPanel.setBackground(Color.GRAY);
         constraints.weightx = 0.2;
         constraints.weighty = 1;
         constraints.gridx = 1;
         constraints.gridy = 0;
         mainPanel.add(rightPanel, constraints);
 
-        gridPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+        gridPanel.setBackground(Color.WHITE);
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.gridx = 0;
@@ -84,6 +84,7 @@ public class TurmiteJFrame extends JFrame {
         leftPanel.add(gridPanel, constraints);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setBackground(Color.GRAY);
         constraints.weightx = 1;
         constraints.weighty = 0;
         constraints.gridx = 0;
@@ -93,15 +94,20 @@ public class TurmiteJFrame extends JFrame {
 
         insets.set(0, 20, 0, 20);
 
+        // Here's a little lesson in trickery
+        // Prevents resizing problems
+        toggleSimButton.setText(PAUSE_STR);
+        toggleSimButton.setPreferredSize(toggleSimButton.getPreferredSize());
+        toggleSimButton.setText(START_STR);
         toggleSimButton.setFocusPainted(false);
-        constraints.weightx = 0.4;
+        constraints.weightx = 0.5;
         constraints.weighty = 0;
         constraints.gridx = 0;
         constraints.gridy = 0;
         buttonPanel.add(toggleSimButton, constraints);
 
         stepSimButton.setFocusPainted(false);
-        constraints.weightx = 0.4;
+        constraints.weightx = 0.3;
         constraints.weighty = 0;
         constraints.gridx = 1;
         constraints.gridy = 0;
@@ -114,6 +120,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.gridy = 0;
         buttonPanel.add(resetSimButton, constraints);
 
+        intervalSlider.setBackground(Color.GRAY);
         constraints.weightx = 1;
         constraints.weighty = 0;
         constraints.gridx = 0;
@@ -125,6 +132,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.gridwidth = 1;
         insets.set(0, 0, 0, 0);
 
+        ruleInputPanel.setBackground(Color.GRAY);
         constraints.weightx = 0;
         constraints.weighty = 0;
         constraints.gridx = 0;
@@ -139,21 +147,21 @@ public class TurmiteJFrame extends JFrame {
 
         insets.set(0, 50, 0, 50);
 
-        JPanel buttonHolderPanel = new JPanel(new GridBagLayout());
-
+        buttonPanel = new JPanel(new GridBagLayout());
+        buttonPanel.setBackground(Color.GRAY);
         importButton.setFocusPainted(false);
         constraints.weightx = 0.5;
         constraints.weighty = 0;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        buttonHolderPanel.add(importButton, constraints);
+        buttonPanel.add(importButton, constraints);
 
         exportButton.setFocusPainted(false);
         constraints.weightx = 0.5;
         constraints.weighty = 0;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        buttonHolderPanel.add(exportButton, constraints);
+        buttonPanel.add(exportButton, constraints);
 
         insets.set(50, 0, 0, 0);
 
@@ -161,7 +169,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.weighty = 0;
         constraints.gridx = 0;
         constraints.gridy = 1;
-        rightPanel.add(buttonHolderPanel, constraints);
+        rightPanel.add(buttonPanel, constraints);
 
         add(mainPanel);
     }
