@@ -4,10 +4,14 @@ import turmite.simulator.ui.*;
 import turmite.simulator.utils.FileHandler;
 import turmite.simulator.utils.Simulator;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
 
 public class TurmiteJFrame extends JFrame {
     private static final String START_STR = "Start";
@@ -17,6 +21,7 @@ public class TurmiteJFrame extends JFrame {
     private static final String IMPORT_STR = "Import";
     private static final String EXPORT_STR = "Export";
 
+    private static final String PICTURES_DIR = "pictures";
     public static final String RULESET_DIR = "rulesets";
     public static final String RULESET_EXT = ".json";
 
@@ -33,6 +38,8 @@ public class TurmiteJFrame extends JFrame {
     private static final JButton stepSimButton = new JButton(STEP_STR);
     private static final JButton resetSimButton = new JButton(RESET_STR);
     private static final IntervalSlider intervalSlider = new IntervalSlider(3, 1000, 100);
+
+    private static final JButton snapPictureButton = new JButton("Snap a pic!");
 
     private static final Simulator simulator = new Simulator(gridPanel, intervalSlider.getValue());
 
@@ -124,6 +131,12 @@ public class TurmiteJFrame extends JFrame {
         constraints.gridy = 0;
         rightPanel.add(ruleInputPanel, constraints);
 
+        snapPictureButton.setFocusPainted(false);
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        insets.set(50, 50, 0, 50);
+        rightPanel.add(snapPictureButton, constraints);
+
         insets.set(0, 50, 0, 50);
 
         JPanel buttonHolderPanel = new JPanel(new GridBagLayout());
@@ -147,7 +160,7 @@ public class TurmiteJFrame extends JFrame {
         constraints.weightx = 1;
         constraints.weighty = 0;
         constraints.gridx = 0;
-        constraints.gridy = 2;
+        constraints.gridy = 1;
         rightPanel.add(buttonHolderPanel, constraints);
 
         add(mainPanel);
@@ -160,6 +173,7 @@ public class TurmiteJFrame extends JFrame {
         stepSimButton.addActionListener(e -> stepSimulation());
         resetSimButton.addActionListener(e -> resetSimulation());
         intervalSlider.addChangeListener(e -> changeSimulationSpeed());
+        snapPictureButton.addActionListener(e -> snapPicture());
     }
 
     private void importRulesetFromFileDialog() {
@@ -217,6 +231,23 @@ public class TurmiteJFrame extends JFrame {
 
     private void changeSimulationSpeed() {
         simulator.setInterval(intervalSlider.getValue());
+    }
+
+    private void snapPicture() {
+        BufferedImage bi = new BufferedImage(gridPanel.getSize().width, gridPanel.getSize().height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        gridPanel.paintAll(g);
+        g.dispose();
+        try {
+            Path path = Path.of(PICTURES_DIR);
+            if (!Files.exists(path)) Files.createDirectory(path);
+            OutputStream out = new FileOutputStream(String.format("%s/%s_%s.png", PICTURES_DIR, "turmite",
+                    String.valueOf(UUID.randomUUID().getLeastSignificantBits()).replace("-", "")));
+            ImageIO.write(bi,"png", out);
+            out.close();
+        } catch (Exception e) {
+            Dialogs.showErrorDialog(this, e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
