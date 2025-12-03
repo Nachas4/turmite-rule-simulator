@@ -260,11 +260,11 @@ public class RuleInputPanel extends JPanel implements ActionListener {
      * @param ruleRow The row of the Rule ranging from 0-{@code Ruleset.MAX_RULES}.
      */
     private void resetRow(int ruleRow) {
-        getIntComboBox(ruleRow, Rule.RuleCells.CURR_STATE).setSelectedItem(0);
-        getIntComboBox(ruleRow, Rule.RuleCells.CURR_COLOR).setSelectedItem(0);
-        getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setSelectedItem(0);
-        getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setSelectedItem(0);
-        getIntComboBox(ruleRow, Rule.RuleCells.NEW_STATE).setSelectedItem(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.CURR_STATE).setSelectedIndex(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.CURR_COLOR).setSelectedIndex(0);
+        getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setSelectedIndex(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setSelectedIndex(0);
+        getIntComboBox(ruleRow, Rule.RuleCells.NEW_STATE).setSelectedIndex(0);
 
         getCharComboBox(ruleRow, Rule.RuleCells.TURN_DIR).setEnabled(false);
         getIntComboBox(ruleRow, Rule.RuleCells.NEW_COLOR).setEnabled(false);
