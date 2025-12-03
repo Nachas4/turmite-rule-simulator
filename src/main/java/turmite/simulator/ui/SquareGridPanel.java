@@ -173,7 +173,7 @@ public class SquareGridPanel extends JPanel {
 
     public void reset() {
         grids.clear();
-        turmite.resetPos();
+        turmite.reset();
         centerMap();
         zoom = DEFAULT_ZOOM;
         repaint();
