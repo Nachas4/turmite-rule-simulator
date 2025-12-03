@@ -41,6 +41,11 @@ public class Grid {
         x += size;
     }
 
+    public void reset() {
+        x = 0;
+        y = 0;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Grid grid) {

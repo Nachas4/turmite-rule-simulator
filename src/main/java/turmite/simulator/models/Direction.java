@@ -14,17 +14,17 @@ public enum Direction {
         return List.of('L', 'R', 'N', 'U');
     }
 
-    public static Direction getTurnDirFromChar(Character character) {
+    public static Direction getTurnDirFromChar(char character) {
         return switch (character) {
             case 'L' -> LEFT;
             case 'R' -> RIGHT;
             case 'N' -> NO_TURN;
-            case 'E' -> U_TURN;
+            case 'U' -> U_TURN;
             default -> throw new IllegalArgumentException("Turn Direction Character not recognized: " + character);
         };
     }
 
-    public static Character getCharFromTurnDir(Direction dir) {
+    public static char getCharFromTurnDir(Direction dir) {
         return switch (dir) {
             case LEFT -> 'L';
             case RIGHT -> 'R';

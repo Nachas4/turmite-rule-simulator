@@ -3,25 +3,21 @@ package turmite.simulator.ui;
 import turmite.simulator.models.Grid;
 import turmite.simulator.models.Rule;
 import turmite.simulator.models.Turmite;
-import turmite.simulator.utils.Ruleset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
-import java.io.FileNotFoundException;
+import java.awt.event.*;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SquareGridPanel extends JPanel {
+    private static final double DEFAULT_ZOOM = 2;
+
     private final Map<Grid, Integer> grids = new HashMap<>();
     private final transient Turmite turmite;
 
-    private double zoom = 2;
+    private double zoom = DEFAULT_ZOOM;
     private double lastMouseX = 0;
     private double lastMouseY = 0;
     private double offsetX = 0;
@@ -32,9 +28,9 @@ public class SquareGridPanel extends JPanel {
     private final int turmitePosModifier = (int)zoom;
     private final int turmiteSize = (int)(zoom * 2);
 
-    public SquareGridPanel() {
+    public SquareGridPanel(RuleInputPanel ruleInputPanel) {
         super();
-        turmite = new Turmite(new Grid(0, 0, gridSize));
+        turmite = new Turmite(new Grid(0, 0, gridSize), ruleInputPanel.getRuleset());
         setupEventListeners();
     }
 
@@ -103,7 +99,7 @@ public class SquareGridPanel extends JPanel {
 
         try {
             for (Map.Entry<Grid, Integer> entry : grids.entrySet()) {
-                g2.setColor(Ruleset.numToColor(entry.getValue()));
+                g2.setColor(Rule.numToColor(entry.getValue()));
                 Grid grid = entry.getKey();
                 g2.fillRect(grid.getX(), grid.getY(), gridSize, gridSize);
             }
@@ -119,7 +115,7 @@ public class SquareGridPanel extends JPanel {
     }
 
     /*
-     * Main Methods
+     * Simulation Methods
      */
 
     public void stepSimulation() {
@@ -139,11 +135,11 @@ public class SquareGridPanel extends JPanel {
         offsetY = ((double) getHeight() / 2) - (gridSize * 1.5);
     }
 
-    public void loadSelectedRuleset(String src) throws FileNotFoundException {
-        turmite.ruleset.readRulesetFromFile(src);
-    }
-
-    public List<Rule> getLoadedRuleset() {
-        return turmite.ruleset.getRules();
+    public void reset() {
+        grids.clear();
+        turmite.reset();
+        centerMap();
+        zoom = DEFAULT_ZOOM;
+        repaint();
     }
 }

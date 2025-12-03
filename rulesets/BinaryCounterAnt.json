@@ -11,14 +11,7 @@
         {
             "currState": 0,
             "currColor": 1,
-            "turnDir": "N",
-            "newColor": 2,
-            "newState": 1
-        },
-        {
-            "currState": 0,
-            "currColor": 2,
-            "turnDir": "R",
+            "turnDir": "L",
             "newColor": 0,
             "newState": 1
         },
@@ -26,21 +19,14 @@
             "currState": 1,
             "currColor": 0,
             "turnDir": "U",
-            "newColor": 2,
-            "newState": 0
+            "newColor": 1,
+            "newState": 1
         },
         {
             "currState": 1,
             "currColor": 1,
             "turnDir": "R",
             "newColor": 0,
-            "newState": 1
-        },
-        {
-            "currState": 1,
-            "currColor": 2,
-            "turnDir": "R",
-            "newColor": 1,
             "newState": 0
         }
     ]
