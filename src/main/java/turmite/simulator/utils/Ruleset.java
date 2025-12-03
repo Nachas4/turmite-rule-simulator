@@ -96,7 +96,15 @@ public class Ruleset {
      * @see #recalculateRulesetTable()
      */
     public void changeRuleCell(int ruleRow, Rule.RuleCells cell, Object newValue) throws IllegalArgumentException {
-        Rule rule = rules.get(ruleRow);
+        Rule rule;
+
+        try {
+            rule = rules.get(ruleRow);
+        } catch (IndexOutOfBoundsException e) {
+            addRule(0, 0, Direction.getSquareGridTurnDirs().getFirst(), 0, 0);
+            rule = rules.getFirst();
+        }
+
         Rule newRule = switch (cell) {
             case CURR_STATE ->
                     validateRuleCells((int)newValue, rule.getCurrColor(), Direction.getCharFromTurnDir(rule.getTurnDir()), rule.getNewColor(), rule.getNewState());
@@ -135,7 +143,7 @@ public class Ruleset {
                     rules.get(row).setCurrState(i);
                     rules.get(row).setCurrColor(j);
                 }
-                else rules.add(new Rule(i, j, Direction.LEFT, 0, 0));
+                else rules.add(new Rule(i, j, Direction.getTurnDirFromChar(Direction.getSquareGridTurnDirs().getFirst()), 0, 0));
 
                 row++;
             }

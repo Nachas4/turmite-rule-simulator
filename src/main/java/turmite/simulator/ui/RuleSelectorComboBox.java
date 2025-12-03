@@ -54,12 +54,15 @@ public class RuleSelectorComboBox extends JComboBox<String> {
         File rulesetDir = new File(TurmiteJFrame.RULESET_DIR);
         File[] files = rulesetDir.listFiles((dir, name) -> name.endsWith(fileExt));
 
-        if (files != null) {
+        if (files != null && files.length > 0) {
             for (File ruleFile : files) {
                 String ruleName = ruleFile.getName().replace(fileExt, "");
                 if (!ruleName.equals(NEW_RULESET_STR)) addItem(ruleName);
                 else Dialogs.showInfoDialog(null, "Rule name cannot be NewRuleset.");
             }
+        } else {
+            addItem(NEW_RULESET_STR);
+            setSelectedItem(NEW_RULESET_STR);
         }
     }
 
