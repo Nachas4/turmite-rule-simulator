@@ -33,7 +33,7 @@ public class TurmiteJFrame extends JFrame {
     private static final Button toggleSimButton = new Button(START_STR);
     private static final Button stepSimButton = new Button(STEP_STR);
     private static final Button resetSimButton = new Button(RESET_STR);
-    private static final IntervalSlider intervalSlider = new IntervalSlider(3, 1000, 300);
+    private static final IntervalSlider intervalSlider = new IntervalSlider(3, 1000, 100);
 
     private static final Simulator simulator = new Simulator(gridPanel, intervalSlider.getValue());
 
