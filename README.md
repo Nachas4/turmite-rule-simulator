@@ -16,5 +16,5 @@ You can clone the repo and build it yourself. After this, you can run it the sam
 Build the JAR with the following command:
 
 ```bash
-mvn clean compile assembly:single
+.\mvnw clean compile assembly:single
 ```
