@@ -18,3 +18,11 @@ Build the JAR with the following command:
 ```bash
 .\mvnw clean compile assembly:single
 ```
+
+## Where to find Rulesets?
+
+I have some cool Rulesets already in the `rulesets\` folder.
+
+## Where to find pictures taken?
+
+All pictures are put next to executable file into the `pictures\` folder.
