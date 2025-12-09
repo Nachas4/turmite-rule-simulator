@@ -25,8 +25,8 @@ public class RuleInputPanel extends JPanel implements ActionListener {
         super();
         ruleSelectorComboBox = new RuleSelectorComboBox(rulesetExt);
         setupGUI();
-        setupEventListeners();
         loadSelectedRuleset();
+        setupEventListeners();
     }
 
     private void setupGUI() {

@@ -22,7 +22,7 @@ public class RuleSelectorComboBox extends JComboBox<String> {
      * Signal that the currently loaded Ruleset has been modified, and so it's not a saved Ruleset but a new one.
      */
     public void signalNewRuleset() {
-        if (notContainsNewRulesetStr()) {
+        if (notContainsItem(NEW_RULESET_STR)) {
             addItem(NEW_RULESET_STR);
             setSelectedItem(RuleSelectorComboBox.NEW_RULESET_STR);
         }
@@ -32,6 +32,7 @@ public class RuleSelectorComboBox extends JComboBox<String> {
      * Signal that a Ruleset has been selected and read.
      */
     public void signalRuleRead(String ruleName) {
+        if (notContainsItem(ruleName)) addItem(ruleName);
         setSelectedItem(ruleName);
         removeItem(NEW_RULESET_STR);
     }
@@ -39,8 +40,8 @@ public class RuleSelectorComboBox extends JComboBox<String> {
     /**
      * @return Whether the dropdown does not contain NEW_RULESET_STR;
      */
-    private boolean notContainsNewRulesetStr() {
-        for (int i = 0; i < getItemCount(); i++) if (this.getItemAt(i).equals(NEW_RULESET_STR)) return false;
+    private boolean notContainsItem(String item) {
+        for (int i = 0; i < getItemCount(); i++) if (this.getItemAt(i).equals(item)) return false;
         return true;
     }
 
