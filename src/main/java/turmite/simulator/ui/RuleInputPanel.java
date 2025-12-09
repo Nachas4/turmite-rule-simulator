@@ -3,6 +3,7 @@ package turmite.simulator.ui;
 import turmite.simulator.TurmiteJFrame;
 import turmite.simulator.models.Direction;
 import turmite.simulator.models.Rule;
+import turmite.simulator.utils.FileHandler;
 import turmite.simulator.utils.Ruleset;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -157,6 +159,11 @@ public class RuleInputPanel extends JPanel implements ActionListener {
             Dialogs.showErrorDialog(this, String.format("File not found: %s", fileName));
         } catch (IllegalArgumentException | Ruleset.InvalidRulesetException e) {
             ruleSelectorComboBox.setSelectedItem(ruleSelectorComboBox.getPrevItem());
+            try {
+                FileHandler.deleteFile(fileName);
+            } catch (IOException ex) {
+                Dialogs.showErrorDialog(this, ex.getMessage());
+            }
             Dialogs.showErrorDialog(this, e.getMessage());
         }
 
