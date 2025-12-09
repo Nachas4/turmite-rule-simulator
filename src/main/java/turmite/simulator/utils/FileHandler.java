@@ -52,7 +52,7 @@ public class FileHandler {
         }
 
         File selectedFile = new File(selectedFilePath);
-        String copiedFilePath = String.format("%s\\%s", fileDir, selectedFile.getName());
+        String copiedFilePath = Path.of(fileDir, selectedFile.getName()).toString();
         Files.copy(Path.of(selectedFilePath), Path.of(copiedFilePath), StandardCopyOption.REPLACE_EXISTING);
 
         return copiedFilePath;
