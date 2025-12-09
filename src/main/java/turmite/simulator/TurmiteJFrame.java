@@ -200,7 +200,8 @@ public class TurmiteJFrame extends JFrame {
 
         if (fileName == null) return;
 
-        if (ruleInputPanel.readRulesetFromFile(fileName.replace(RULESET_DIR + "\\", ""))) Dialogs.showInfoDialog(this, "Ruleset imported successfully!");
+        if (ruleInputPanel.readRulesetFromFile(fileName.replace(RULESET_DIR + "\\", "")))
+            Dialogs.showInfoDialog(this, "Ruleset imported successfully!");
     }
 
     /**

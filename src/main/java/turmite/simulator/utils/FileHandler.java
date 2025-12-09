@@ -1,5 +1,6 @@
 package turmite.simulator.utils;
 
+import turmite.simulator.TurmiteJFrame;
 import turmite.simulator.models.Direction;
 import turmite.simulator.models.Rule;
 import turmite.simulator.ui.Dialogs;
@@ -51,7 +52,7 @@ public class FileHandler {
         }
 
         File selectedFile = new File(selectedFilePath);
-        String copiedFilePath = String.format("%s\\%s", fileDir, selectedFile.getName());
+        String copiedFilePath = Path.of(fileDir, selectedFile.getName()).toString();
         Files.copy(Path.of(selectedFilePath), Path.of(copiedFilePath), StandardCopyOption.REPLACE_EXISTING);
 
         return copiedFilePath;
@@ -105,5 +106,9 @@ public class FileHandler {
         rulesetObject.add("ruleset", rulesetArray.build());
         writer.write(rulesetObject.build());
         writer.close();
+    }
+
+    public static void deleteFile(String fileName) throws IOException {
+        Files.delete(Path.of(TurmiteJFrame.RULESET_DIR, fileName));
     }
 }
